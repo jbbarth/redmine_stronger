@@ -10,7 +10,7 @@ Current features
 
 * *Basic anti-brute-force system* : the standard login form of Redmine is fragile, especially if you happen
 to have a lot of users and you can't manage their password policy. This feature will lock any user account
-after 3 failed password submissions. Then the user should be manually unlocked by an administrator or through
+after 5 failed password submissions. Then the user should be manually unlocked by an administrator or through
 the console. For sanity, it resets the counter each time the user successfully logs in, so the feature will
 only be triggered rarely.
 

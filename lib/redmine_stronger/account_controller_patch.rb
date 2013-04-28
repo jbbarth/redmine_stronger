@@ -1,6 +1,9 @@
 require_dependency "account_controller"
 
 class AccountController
+  # Maximum number of failed attempts before locking
+  MAX_FAILED_ATTEMPTS = 5
+
   # Patch #invalid_credentials to add a brute force attack counter
   #
   # The counter increments each time the user logs in with a bad password. When
@@ -28,10 +31,9 @@ class AccountController
   end
   alias_method_chain :successful_authentication, :locking
 
-
   private
   def brute_forcing?(user)
-    user.pref[:brute_force_counter].to_i >= 3
+    user.pref[:brute_force_counter].to_i >= MAX_FAILED_ATTEMPTS
   end
 
   def set_brute_force_counter(user, value)

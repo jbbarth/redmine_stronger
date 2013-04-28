@@ -8,6 +8,7 @@ class StrongerAccountControllerTest < ActionController::TestCase
     @controller = AccountController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
+    @max_failed_attempts = AccountController::MAX_FAILED_ATTEMPTS
     User.current = nil
   end
 
@@ -17,7 +18,7 @@ class StrongerAccountControllerTest < ActionController::TestCase
 
   test "lock account after 3 failed attempts" do
     user = User.find_by_login("admin")
-    3.times do
+    @max_failed_attempts.times do
       assert !user.reload.locked?, "User shouldn't be locked"
       post :login, :username => "admin", :password => "bad"
       assert_response :success
@@ -28,7 +29,7 @@ class StrongerAccountControllerTest < ActionController::TestCase
 
   test "reset counters with successful login" do
     user = User.find_by_login("admin")
-    2.times do
+    1.times do
       post :login, :username => "admin", :password => "bad"
     end
     post :login, :username => "admin", :password => "admin"
