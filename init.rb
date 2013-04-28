@@ -7,3 +7,8 @@ Redmine::Plugin.register :redmine_stronger do
   version "0.0.1"
   url "https://github.com/jbbarth/redmine_stronger"
 end
+
+# Patches to existing classes/modules
+ActionDispatch::Callbacks.to_prepare do
+  require_dependency "redmine_stronger/account_controller_patch"
+end
