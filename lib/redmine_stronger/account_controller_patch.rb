@@ -15,6 +15,15 @@ class AccountController
   end
   alias_method_chain :invalid_credentials, :locking
 
+  def successful_authentication_with_locking(user)
+    pref = user.pref
+    pref[:brute_force_counter] = 0
+    pref.save
+    successful_authentication_without_locking(user)
+  end
+  alias_method_chain :successful_authentication, :locking
+
+
   private
   def brute_forcing?(user)
     user.pref[:brute_force_counter].to_i >= 3

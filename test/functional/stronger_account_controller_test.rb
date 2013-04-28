@@ -25,4 +25,13 @@ class StrongerAccountControllerTest < ActionController::TestCase
     end
     assert user.reload.locked?, "User should be locked"
   end
+
+  test "reset counters with successful login" do
+    user = User.find_by_login("admin")
+    2.times do
+      post :login, :username => "admin", :password => "bad"
+    end
+    post :login, :username => "admin", :password => "admin"
+    assert_equal 0, user.reload.pref[:brute_force_counter]
+  end
 end
