@@ -1,6 +1,10 @@
 require_dependency "account_controller"
 
 class AccountController
+  # Patch #invalid_credentials to add a brute force attack counter
+  #
+  # The counter increments each time the user logs in with a bad password. When
+  # the counter reaches the max failed attemps limit, it locks the account.
   def invalid_credentials_with_locking
     if user = User.active.find_by_login(params[:username].to_s)
       #increment brute-force counter
@@ -13,6 +17,11 @@ class AccountController
   end
   alias_method_chain :invalid_credentials, :locking
 
+  # Patch #successful_authentication to reset brute force attack counter
+  #
+  # On successful authentication, brute_force_counter should be reset to 0 so
+  # that user won't have problems the next time he mistakenly fills his
+  # password.
   def successful_authentication_with_locking(user)
     set_brute_force_counter(user, 0)
     successful_authentication_without_locking(user)
