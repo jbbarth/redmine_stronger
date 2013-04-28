@@ -2,7 +2,7 @@ require_dependency "account_controller"
 
 class AccountController
   def invalid_credentials_with_locking
-    if user = User.find_by_login(params[:username].to_s)
+    if user = User.active.find_by_login(params[:username].to_s)
       #increment brute-force counter
       pref = user.pref
       pref[:brute_force_counter] = pref[:brute_force_counter].to_i + 1
