@@ -24,7 +24,9 @@ class StrongerAccountControllerTest < ActionController::TestCase
       assert_response :success
       assert_template "login"
     end
-    assert user.reload.locked?, "User should be locked"
+    user.reload
+    assert user.locked?, "User should be locked"
+    assert user.lock_comment.match /Locked at/
   end
 
   test "reset counters with successful login" do

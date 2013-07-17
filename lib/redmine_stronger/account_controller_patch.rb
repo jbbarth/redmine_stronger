@@ -13,7 +13,10 @@ class AccountController
       #increment brute-force counter
       set_brute_force_counter(user, get_brute_force_counter(user) + 1)
       #lock the user immediately if detecting a brute force attack
-      user.lock! if brute_forcing?(user)
+      if brute_forcing?(user)
+        user.update_attribute(:lock_comment, "Locked at #{Time.now} after #{MAX_FAILED_ATTEMPTS} erroneous password")
+        user.lock!
+      end
     end
     #original action
     invalid_credentials_without_locking
