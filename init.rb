@@ -8,6 +8,7 @@ Redmine::Plugin.register :redmine_stronger do
   version "0.0.1"
   url "https://github.com/jbbarth/redmine_stronger"
   requires_redmine_plugin :redmine_base_rspec, :version_or_higher => '0.0.3' if Rails.env.test?
+  requires_redmine_plugin :redmine_base_deface, :version_or_higher => '0.0.1'
 end
 
 # Patches to existing classes/modules
