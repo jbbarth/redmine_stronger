@@ -13,4 +13,5 @@ end
 # Patches to existing classes/modules
 ActionDispatch::Callbacks.to_prepare do
   require_dependency "redmine_stronger/account_controller_patch"
+  require_dependency "redmine_stronger/users_controller_patch"
 end
