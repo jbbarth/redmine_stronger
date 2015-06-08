@@ -18,7 +18,7 @@ describe AccountController do
     @max_failed_attempts.times do
       assert !user.reload.locked?, "User shouldn't be locked"
       post :login, :username => "admin", :password => "bad"
-      response.should be_success
+      expect(response).to be_success
       assert_template "login"
     end
     user.reload
