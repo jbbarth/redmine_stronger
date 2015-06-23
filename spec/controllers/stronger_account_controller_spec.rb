@@ -32,6 +32,6 @@ describe AccountController do
       post :login, :username => "admin", :password => "bad"
     end
     post :login, :username => "admin", :password => "admin"
-    user.reload.pref[:brute_force_counter].should == 0
+    expect(user.reload.pref[:brute_force_counter]).to eq 0
   end
 end

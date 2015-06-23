@@ -25,12 +25,12 @@ describe "users" do
 
     it "removes lock_comment when unlocking a user" do
       put user_path(user.id, :user => {:status => User::STATUS_ACTIVE})
-      user.reload.lock_comment.should be_blank
+      expect(user.reload.lock_comment).to be_blank
     end
 
     it "keeps lock_comment when updating without unlocking" do
       put user_path(user.id, :mail => "blah@foo.net")
-      user.reload.lock_comment.should_not be_blank
+      expect(user.reload.lock_comment).to_not be_blank
     end
   end
 end
