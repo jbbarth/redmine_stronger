@@ -21,7 +21,10 @@ This plugin is compatible with Redmine 2.1.x and 2.2.x, and should be compatible
 
 You can first take a look at general instructions for plugins [here](http://www.redmine.org/wiki/redmine/Plugins).
 
-Then :
+This plugin has one dependency:
+* install the redmine_base_deface plugin (see [here](https://github.com/jbbarth/redmine_base_deface))
+
+Then:
 * clone this repository in your "plugins/" directory ; if you have a doubt you put it at the good level, you can check you have a plugins/redmine_stronger/init.rb file
 * run the migrations from your redmine root directory with command : `RAILS_ENV=production rake redmine:plugins`
 * install dependencies (gems) by running the following command: `bundle install`
@@ -30,7 +33,7 @@ Then :
 Contribute
 ----------
 
-If you like this plugin, it's a good idea to contribute :
+If you like this plugin, it's a good idea to contribute:
 * by giving feed back on what is cool, what should be improved
 * by reporting bugs : you can open issues directly on github
 * by forking it and sending pull request if you have a patch or a feature you want to implement
