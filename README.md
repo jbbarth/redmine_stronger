@@ -17,7 +17,7 @@ only be triggered rarely.
 Install
 -------
 
-This plugin is compatible with Redmine 2.1.x and 2.2.x, and should be compatible with future versions.
+This plugin is compatible with Redmine 2.1.x and later.
 
 You can first take a look at general instructions for plugins [here](http://www.redmine.org/wiki/redmine/Plugins).
 
@@ -29,6 +29,10 @@ Then:
 * run the migrations from your redmine root directory with command : `RAILS_ENV=production rake redmine:plugins`
 * install dependencies (gems) by running the following command: `bundle install`
 * restart your Redmine instance (depends on how you host it)
+
+Requirements:
+
+    ruby >= 2.1.0
 
 Contribute
 ----------
