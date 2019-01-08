@@ -1,7 +1,7 @@
 require_dependency "users_controller"
 
 class UsersController
-  before_filter :remove_lock_comment, :only => :update
+  before_action :remove_lock_comment, :only => :update
 
   def remove_lock_comment
     #user is locked

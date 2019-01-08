@@ -17,8 +17,8 @@ describe AccountController do
     user = User.find_by_login("admin")
     @max_failed_attempts.times do
       assert !user.reload.locked?, "User shouldn't be locked"
-      post :login, :username => "admin", :password => "bad"
-      expect(response).to be_success
+      post :login, params: {:username => "admin", :password => "bad"}
+      expect(response).to be_successful
       assert_template "login"
     end
     user.reload
@@ -29,9 +29,9 @@ describe AccountController do
   it "should reset counters with successful login" do
     user = User.find_by_login("admin")
     1.times do
-      post :login, :username => "admin", :password => "bad"
+      post :login, params: {:username => "admin", :password => "bad"}
     end
-    post :login, :username => "admin", :password => "admin"
+    post :login, params: {:username => "admin", :password => "admin"}
     expect(user.reload.pref[:brute_force_counter]).to eq 0
   end
 end
