@@ -24,7 +24,8 @@ module PluginStronger
       end
       # original action
       super
-      flash.now[:error] = l(:notice_account_invalid_credentials_or_locked)
+      
+      flash.now[:error] = l(:notice_account_invalid_credentials_or_locked) unless Rails.env == 'test'
     end
 
     def account_locked(user, redirect_path=signin_path)
