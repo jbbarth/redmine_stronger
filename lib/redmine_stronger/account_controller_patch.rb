@@ -1,7 +1,5 @@
-require_dependency "account_controller"
-
-module PluginStronger
-  module AccountController
+module RedmineStronger
+  module AccountControllerPatch
 
     # Maximum number of failed attempts before locking
     MAX_FAILED_ATTEMPTS = 5
@@ -78,4 +76,4 @@ module PluginStronger
   end
 end
 
-AccountController.prepend PluginStronger::AccountController
+AccountController.prepend RedmineStronger::AccountControllerPatch
