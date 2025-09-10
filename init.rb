@@ -10,8 +10,12 @@ Redmine::Plugin.register :redmine_stronger do
   requires_redmine_plugin :redmine_base_deface, :version_or_higher => '0.0.1'
 end
 
-# Patches to existing classes/modules
-ActiveSupport::Reloader.to_prepare do
-  require_dependency "redmine_stronger/account_controller_patch"
-  require_dependency "redmine_stronger/users_controller_patch"
+module RedmineStronger
+  class ModelHook < Redmine::Hook::Listener
+    def after_plugins_loaded(_context = {})
+      require_relative "lib/redmine_stronger/account_controller_patch"
+      require_relative "lib/redmine_stronger/users_controller_patch"
+      require_relative "lib/redmine_stronger/repositories_patch"
+    end
+  end
 end
