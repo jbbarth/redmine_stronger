@@ -16,6 +16,8 @@ module RedmineStronger
       require_relative "lib/redmine_stronger/account_controller_patch"
       require_relative "lib/redmine_stronger/users_controller_patch"
       require_relative "lib/redmine_stronger/repositories_patch"
+      require_relative "lib/redmine_stronger/hooks"
+      require_relative "lib/redmine_stronger/user_patch"
     end
   end
 end

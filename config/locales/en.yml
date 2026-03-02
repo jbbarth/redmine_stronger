@@ -1,2 +1,15 @@
 en:
   notice_account_invalid_credentials_or_locked: Invalid Login/Password or account locked.
+
+  stronger_login_sessions_title: "Recent logins"
+  stronger_no_login_sessions: "No login sessions recorded."
+  stronger_column_ip: "IP address"
+  stronger_column_device: "Device / OS"
+  stronger_column_auth_method: "Authentication"
+  stronger_device_desktop: "Desktop"
+  stronger_device_mobile: "Mobile"
+  stronger_device_tablet: "Tablet"
+  stronger_auth_method_password: "Password"
+  stronger_auth_method_cas: "CAS"
+  stronger_auth_method_ldap: "LDAP"
+  stronger_auth_method_sso: "SSO"

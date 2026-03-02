@@ -1,2 +1,15 @@
 fr:
   notice_account_invalid_credentials_or_locked: Identifiant/mot de passe invalide ou compte verrouillé.
+
+  stronger_login_sessions_title: "Connexions récentes"
+  stronger_no_login_sessions: "Aucune connexion enregistrée."
+  stronger_column_ip: "Adresse IP"
+  stronger_column_device: "Appareil / OS"
+  stronger_column_auth_method: "Authentification"
+  stronger_device_desktop: "Ordinateur"
+  stronger_device_mobile: "Mobile"
+  stronger_device_tablet: "Tablette"
+  stronger_auth_method_password: "Mot de passe"
+  stronger_auth_method_cas: "CAS"
+  stronger_auth_method_ldap: "LDAP"
+  stronger_auth_method_sso: "SSO"

@@ -1,0 +1,37 @@
+/* redmine_stronger — login sessions */
+
+.stronger-login-sessions table.list {
+  /* width: 100%; */
+  min-width: 50%;
+}
+
+.stronger-device-icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  margin-right: 2px;
+}
+
+/* Simple Unicode-based device icons via CSS content on a pseudo-element */
+.stronger-device-desktop::before { content: "🖥"; font-size: 14px; }
+.stronger-device-mobile::before  { content: "📱"; font-size: 14px; }
+.stronger-device-tablet::before  { content: "⬜"; font-size: 14px; }
+
+/* Auth method badges */
+.stronger-auth-badge {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.stronger-auth-password { background-color: #6c757d; }
+.stronger-auth-cas      { background-color: #0d6efd; }
+.stronger-auth-ldap     { background-color: #198754; }
+.stronger-auth-sso      { background-color: #6f42c1; }

@@ -1,0 +1,36 @@
+<div class="stronger-login-sessions">
+  <% if local_assigns[:show_title] %>
+    <h3><%= l(:stronger_login_sessions_title) %></h3>
+  <% end %>
+
+  <% if sessions.empty? %>
+    <p class="nodata"><%= l(:stronger_no_login_sessions) %></p>
+  <% else %>
+    <table class="list">
+      <thead>
+        <tr>
+          <th><%= l(:label_date) %></th>
+          <th><%= l(:stronger_column_device) %></th>
+          <th><%= l(:stronger_column_auth_method) %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% sessions.each do |session| %>
+          <tr>
+            <td><%= format_time(session.logged_in_at) %></td>
+            <td>
+              <span class="stronger-device-icon stronger-device-<%= h session.device_type %>"></span>
+              <%= l(:"stronger_device_#{session.device_type}", default: session.device_type&.capitalize.to_s) %>
+              &ndash; <%= h session.os %>
+            </td>
+            <td>
+              <span class="stronger-auth-badge stronger-auth-<%= h session.auth_method %>">
+                <%= l(:"stronger_auth_method_#{session.auth_method}", default: session.auth_method.to_s.upcase) %>
+              </span>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</div>

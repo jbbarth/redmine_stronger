@@ -14,6 +14,7 @@ describe AccountController do
 
   teardown do
     User.find_by_login("admin").activate!
+    UserLoginSession.where(user_id: User.find_by_login("admin").id).delete_all
     travel_back
   end
 
@@ -52,5 +53,29 @@ describe AccountController do
     post :login, params: {:username => "admin", :password => "admin"}
     expect(user.reload.active?).to be_truthy
     expect(user.pref[:brute_force_lock_time]).to be_nil
+  end
+
+  describe "login session tracking" do
+    it "creates a login session on successful password authentication" do
+      user = User.find_by_login("admin")
+      expect {
+        post :login, params: { username: "admin", password: "admin" }
+      }.to change { UserLoginSession.where(user_id: user.id).count }.by(1)
+    end
+
+    it "records auth_method as 'password' for standard login" do
+      user = User.find_by_login("admin")
+      post :login, params: { username: "admin", password: "admin" }
+      session = UserLoginSession.where(user_id: user.id).last
+      expect(session).to be_present
+      expect(session.auth_method).to eq("password")
+    end
+
+    it "does not create a login session on failed authentication" do
+      user = User.find_by_login("admin")
+      expect {
+        post :login, params: { username: "admin", password: "wrong" }
+      }.not_to change { UserLoginSession.where(user_id: user.id).count }
+    end
   end
 end
