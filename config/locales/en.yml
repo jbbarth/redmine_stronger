@@ -13,3 +13,26 @@ en:
   stronger_auth_method_cas: "CAS"
   stronger_auth_method_ldap: "LDAP"
   stronger_auth_method_sso: "SSO"
+
+  label_stronger_security_dashboard: "Security Dashboard"
+
+  stronger_section_anon_visibility: "Visibility without login (unauthenticated user)"
+  stronger_section_non_member_visibility: "Visibility without membership (logged in, no project)"
+  stronger_no_exposed_issues: "No issues are visible at this level."
+  stronger_exposed_issues_summary: "%{total} issue(s) visible — %{open} open, %{closed} closed."
+  stronger_top_exposed_projects: "Most exposed projects"
+
+  stronger_section_inactive_users: "Accounts inactive for more than %{days} days (%{count} total)"
+  stronger_no_inactive_users: "No active accounts inactive for more than %{days} days."
+  stronger_never_logged_in: "Never logged in"
+  stronger_inactive_users_more: "%{shown} shown out of %{total} inactive accounts."
+
+  stronger_section_locked_users: "Locked accounts (brute force protection)"
+  stronger_no_locked_users: "No accounts are locked."
+  field_lock_comment: "Lock reason"
+
+  stronger_section_2fa: "Two-factor authentication (2FA)"
+  stronger_all_users_have_2fa: "All active users have enabled 2FA."
+  stronger_users_without_2fa_count: "%{count} active user(s) without 2FA."
+  stronger_2fa_more: "%{shown} shown out of %{total} users without 2FA."
+  stronger_too_many_to_list: "The count (%{count}) exceeds the display threshold (%{threshold}). Use an export or filter the users list instead."

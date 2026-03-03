@@ -13,3 +13,26 @@ fr:
   stronger_auth_method_cas: "CAS"
   stronger_auth_method_ldap: "LDAP"
   stronger_auth_method_sso: "SSO"
+
+  label_stronger_security_dashboard: "Tableau de bord sécurité"
+
+  stronger_section_anon_visibility: "Demandes visibles sans connexion (utilisateur non authentifié)"
+  stronger_section_non_member_visibility: "Demandes visibles sans permissions (utilisateur connecté, membre d'aucun projet)"
+  stronger_no_exposed_issues: "Aucune demande n'est visible à ce niveau."
+  stronger_exposed_issues_summary: "%{total} demande(s) visible(s) — %{open} ouverte(s), %{closed} fermée(s)."
+  stronger_top_exposed_projects: "Principaux projets exposés"
+
+  stronger_section_inactive_users: "Comptes inactifs depuis plus de %{days} jours (%{count} au total)"
+  stronger_no_inactive_users: "Aucun compte actif inactif depuis plus de %{days} jours."
+  stronger_never_logged_in: "Jamais connecté"
+  stronger_inactive_users_more: "%{shown} affichés sur %{total} comptes inactifs."
+
+  stronger_section_locked_users: "Comptes verrouillés (protection brute force)"
+  stronger_no_locked_users: "Aucun compte verrouillé."
+  field_lock_comment: "Raison du verrouillage"
+
+  stronger_section_2fa: "Double authentification (2FA)"
+  stronger_all_users_have_2fa: "Tous les utilisateurs actifs ont activé la 2FA."
+  stronger_users_without_2fa_count: "%{count} utilisateur(s) actif(s) sans 2FA."
+  stronger_2fa_more: "%{shown} affichés sur %{total} utilisateurs sans 2FA."
+  stronger_too_many_to_list: "Le nombre est trop élevé (%{count}) pour afficher la liste individuellement (seuil : %{threshold})."

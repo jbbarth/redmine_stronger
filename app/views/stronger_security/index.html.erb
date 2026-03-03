@@ -1,0 +1,204 @@
+<h2><%= l(:label_stronger_security_dashboard) %></h2>
+
+<%# ── 1. Visibilité sans connexion (Anonymous) ───────────────────────────── %>
+<div class="box">
+  <h3><%= l(:stronger_section_anon_visibility) %></h3>
+
+  <% if @anon_total == 0 %>
+    <p class="icon icon-check-ok"><%= l(:stronger_no_exposed_issues) %></p>
+  <% else %>
+    <p class="stronger-alert">
+      <%= l(:stronger_exposed_issues_summary,
+            total:  @anon_total,
+            open:   @anon_open,
+            closed: @anon_total - @anon_open) %>
+    </p>
+    <% unless @anon_top_projects.empty? %>
+      <h4><%= l(:stronger_top_exposed_projects) %></h4>
+      <table class="list">
+        <thead>
+          <tr>
+            <th><%= l(:field_project) %></th>
+            <th class="count"><%= l(:label_open_issues_plural) %></th>
+            <th class="count"><%= l(:label_closed_issues_plural) %></th>
+            <th class="count"><%= l(:label_total) %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @anon_top_projects.each do |row| %>
+            <tr>
+              <td><%= link_to row.name, settings_project_path(row.identifier) %></td>
+              <td class="count"><%= row.open_count.to_i %></td>
+              <td class="count"><%= row.total_count.to_i - row.open_count.to_i %></td>
+              <td class="count"><strong><%= row.total_count.to_i %></strong></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
+  <% end %>
+</div>
+
+<%# ── 2. Visibilité sans appartenance (Non-member) ───────────────────────── %>
+<div class="box">
+  <h3><%= l(:stronger_section_non_member_visibility) %></h3>
+
+  <% if @non_member_total == 0 %>
+    <p class="icon icon-check-ok"><%= l(:stronger_no_exposed_issues) %></p>
+  <% else %>
+    <p class="stronger-alert">
+      <%= l(:stronger_exposed_issues_summary,
+            total:  @non_member_total,
+            open:   @non_member_open,
+            closed: @non_member_total - @non_member_open) %>
+    </p>
+    <% unless @non_member_top_projects.empty? %>
+      <h4><%= l(:stronger_top_exposed_projects) %></h4>
+      <table class="list">
+        <thead>
+          <tr>
+            <th><%= l(:field_project) %></th>
+            <th class="count"><%= l(:label_open_issues_plural) %></th>
+            <th class="count"><%= l(:label_closed_issues_plural) %></th>
+            <th class="count"><%= l(:label_total) %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @non_member_top_projects.each do |row| %>
+            <tr>
+              <td><%= link_to row.name, settings_project_path(row.identifier) %></td>
+              <td class="count"><%= row.open_count.to_i %></td>
+              <td class="count"><%= row.total_count.to_i - row.open_count.to_i %></td>
+              <td class="count"><strong><%= row.total_count.to_i %></strong></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
+  <% end %>
+</div>
+
+<%# ── 3. Comptes inactifs ─────────────────────────────────────────────────── %>
+<div class="box">
+  <h3><%= l(:stronger_section_inactive_users,
+             count: @inactive_users_count,
+             days:  RedmineStronger::SecurityMetrics::INACTIVE_DAYS) %></h3>
+
+  <% if @inactive_users_count == 0 %>
+    <p class="icon icon-check-ok"><%= l(:stronger_no_inactive_users) %></p>
+  <% elsif @inactive_users.empty? %>
+    <%# Count exceeds threshold: listing individuals is not actionable %>
+    <p class="stronger-alert">
+      <%= l(:stronger_too_many_to_list,
+            count: @inactive_users_count,
+            threshold: RedmineStronger::SecurityMetrics::LARGE_COUNT_THRESHOLD) %>
+    </p>
+  <% else %>
+    <table class="list">
+      <thead>
+        <tr>
+          <th><%= l(:field_login) %></th>
+          <th><%= l(:field_user) %></th>
+          <th><%= l(:field_last_login_on) %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @inactive_users.each do |user| %>
+          <tr>
+            <td><%= link_to user.login, edit_user_path(user) %></td>
+            <td><%= user.name %></td>
+            <td class="<%= user.last_login_on ? '' : 'stronger-never-logged' %>">
+              <%= user.last_login_on ? format_date(user.last_login_on) : l(:stronger_never_logged_in) %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <% if @inactive_users_count > @inactive_users.size %>
+      <p class="icon icon-more">
+        <%= l(:stronger_inactive_users_more,
+              shown: @inactive_users.size,
+              total: @inactive_users_count) %>
+      </p>
+    <% end %>
+  <% end %>
+</div>
+
+<%# ── 4. Double authentification ─────────────────────────────────────────── %>
+<% if Setting.twofa? %>
+  <div class="box">
+    <h3><%= l(:stronger_section_2fa) %></h3>
+
+    <% if @users_without_2fa_count == 0 %>
+      <p class="icon icon-check-ok"><%= l(:stronger_all_users_have_2fa) %></p>
+    <% else %>
+      <p class="stronger-alert">
+        <%= l(:stronger_users_without_2fa_count, count: @users_without_2fa_count) %>
+      </p>
+      <% if @users_without_2fa.empty? %>
+        <%# Count exceeds threshold: listing individuals is not actionable %>
+        <p>
+          <%= l(:stronger_too_many_to_list,
+                count: @users_without_2fa_count,
+                threshold: RedmineStronger::SecurityMetrics::LARGE_COUNT_THRESHOLD) %>
+        </p>
+      <% else %>
+        <table class="list">
+          <thead>
+          <tr>
+            <th><%= l(:field_login) %></th>
+            <th><%= l(:field_user) %></th>
+            <th><%= l(:field_last_login_on) %></th>
+          </tr>
+          </thead>
+          <tbody>
+          <% @users_without_2fa.each do |user| %>
+            <tr>
+              <td><%= link_to user.login, edit_user_path(user) %></td>
+              <td><%= user.name %></td>
+              <td><%= user.last_login_on ? format_date(user.last_login_on) : l(:stronger_never_logged_in) %></td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+        <% if @users_without_2fa_count > @users_without_2fa.size %>
+          <p class="icon icon-more">
+            <%= l(:stronger_2fa_more,
+                  shown: @users_without_2fa.size,
+                  total: @users_without_2fa_count) %>
+          </p>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>
+
+<%# ── 5. Comptes verrouillés (brute force) ───────────────────────────────── %>
+<div class="box">
+  <h3><%= l(:stronger_section_locked_users) %></h3>
+
+  <% if @locked_users.empty? %>
+    <p class="icon icon-check-ok"><%= l(:stronger_no_locked_users) %></p>
+  <% else %>
+    <table class="list">
+      <thead>
+        <tr>
+          <th><%= l(:field_login) %></th>
+          <th><%= l(:field_user) %></th>
+          <th><%= l(:field_lock_comment) %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @locked_users.each do |user| %>
+          <tr>
+            <td><%= link_to user.login, edit_user_path(user) %></td>
+            <td><%= user.name %></td>
+            <td><%= h user.lock_comment %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</div>
+
+<% html_title l(:label_stronger_security_dashboard) %>

@@ -8,6 +8,11 @@ Redmine::Plugin.register :redmine_stronger do
   url "https://github.com/jbbarth/redmine_stronger"
   requires_redmine_plugin :redmine_base_rspec, :version_or_higher => '0.0.3' if Rails.env.test?
   requires_redmine_plugin :redmine_base_deface, :version_or_higher => '0.0.1'
+
+  menu :admin_menu, :stronger_security,
+       { controller: 'stronger_security', action: 'index' },
+       caption: :label_stronger_security_dashboard,
+       icon: 'shield-check'
 end
 
 module RedmineStronger
@@ -18,6 +23,7 @@ module RedmineStronger
       require_relative "lib/redmine_stronger/repositories_patch"
       require_relative "lib/redmine_stronger/hooks"
       require_relative "lib/redmine_stronger/user_patch"
+      require_relative "lib/redmine_stronger/security_metrics"
     end
   end
 end
