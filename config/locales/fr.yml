@@ -11,6 +11,7 @@ fr:
   stronger_device_tablet: "Tablette"
   stronger_auth_method_password: "Mot de passe"
   stronger_auth_method_cas: "CAS"
+  stronger_auth_method_openid_connect: "SSO (OIDC)"
   stronger_auth_method_ldap: "LDAP"
   stronger_auth_method_sso: "SSO"
 

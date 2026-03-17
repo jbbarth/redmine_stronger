@@ -31,7 +31,8 @@
   color: #fff;
 }
 
-.stronger-auth-password { background-color: #6c757d; }
-.stronger-auth-cas      { background-color: #0d6efd; }
-.stronger-auth-ldap     { background-color: #198754; }
-.stronger-auth-sso      { background-color: #6f42c1; }
+.stronger-auth-password        { background-color: #6c757d; }
+.stronger-auth-cas             { background-color: #0d6efd; }
+.stronger-auth-ldap            { background-color: #198754; }
+.stronger-auth-sso             { background-color: #6f42c1; }
+.stronger-auth-openid_connect  { background-color: #0d6efd; }
