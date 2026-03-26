@@ -19,9 +19,11 @@ module RedmineStronger
   class ModelHook < Redmine::Hook::Listener
     def after_plugins_loaded(_context = {})
       require_relative "lib/redmine_stronger/account_controller_patch"
+      require_relative "lib/redmine_stronger/application_controller_patch"
       require_relative "lib/redmine_stronger/users_controller_patch"
       require_relative "lib/redmine_stronger/repositories_patch"
       require_relative "lib/redmine_stronger/hooks"
+      require_relative "lib/redmine_stronger/token_patch"
       require_relative "lib/redmine_stronger/user_patch"
       require_relative "lib/redmine_stronger/security_metrics"
     end
