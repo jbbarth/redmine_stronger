@@ -18,6 +18,7 @@ end
 module RedmineStronger
   class ModelHook < Redmine::Hook::Listener
     def after_plugins_loaded(_context = {})
+      require_relative "lib/redmine_stronger/brute_force"
       require_relative "lib/redmine_stronger/account_controller_patch"
       require_relative "lib/redmine_stronger/application_controller_patch"
       require_relative "lib/redmine_stronger/users_controller_patch"

@@ -6,8 +6,8 @@ describe AccountController do
   include ActiveSupport::Testing::TimeHelpers
 
   before do
-    @max_failed_attempts = AccountController::MAX_FAILED_ATTEMPTS
-    @lock_time = AccountController::LOCKED_FOR_MINUTES
+    @max_failed_attempts = RedmineStronger::BruteForce::MAX_FAILED_ATTEMPTS
+    @lock_time = RedmineStronger::BruteForce::LOCKED_FOR_MINUTES
 
     User.current = nil
   end

@@ -8,11 +8,12 @@ will some day get their way into core.
 Current features
 ----------------
 
-* *Basic anti-brute-force system* : the standard login form of Redmine is fragile, especially if you happen
-to have a lot of users and you can't manage their password policy. This feature will lock any user account
-after 5 failed password submissions. Then the user should be manually unlocked by an administrator or through
-the console. For sanity, it resets the counter each time the user successfully logs in, so the feature will
-only be triggered rarely.
+* *Anti-brute-force system* : Redmine's authentication is fragile against dictionary attacks, especially if you
+have a lot of users and can't manage their password policy. This feature locks any user account after 5 failed
+password attempts. Protection applies to every password-based authentication channel: the web login form **and**
+the API HTTP Basic authentication, which share the same failure counter. A locked account is unlocked
+automatically after a short delay (or manually by an administrator). The counter is reset on each successful
+login, so legitimate users are rarely affected.
 
 Install
 -------
