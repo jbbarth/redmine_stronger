@@ -149,11 +149,8 @@
             <td><%= user.name %></td>
             <td><%= format_time(token.last_used_at) %></td>
             <td>
-              <% if user.trusted_api_user? %>
-                <span class="icon icon-check-ok"><%= l(:general_text_Yes) %></span>
-              <% else %>
-                <%= l(:general_text_No) %>
-              <% end %>
+              <%= checked_image(user.trusted_api_user?) %>
+              <%= user.trusted_api_user? ? l(:general_text_Yes) : l(:general_text_No) %>
             </td>
           </tr>
         <% end %>
