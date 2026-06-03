@@ -5,6 +5,7 @@ module RedmineStronger
     INACTIVE_DAYS        = 360
     TOP_PROJECTS_LIMIT   = 10
     INACTIVE_USERS_LIMIT = 15
+    API_USERS_LIMIT      = 25
     # Above this threshold, individual user lists are not shown (count only).
     LARGE_COUNT_THRESHOLD = 50
 
@@ -45,9 +46,13 @@ module RedmineStronger
           .count
     end
 
-    # Active users without 2FA enabled. Only meaningful if Setting.twofa? is true.
-    def self.users_without_2fa
-      User.active.where(twofa_scheme: nil)
+    # API tokens that have been used to authenticate, most recently used first.
+    def self.api_users
+      Token.where(action: 'api')
+           .where.not(last_used_at: nil)
+           .includes(:user)
+           .order(last_used_at: :desc)
+           .limit(API_USERS_LIMIT)
     end
   end
 end

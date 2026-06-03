@@ -124,54 +124,43 @@
   <% end %>
 </div>
 
-<%# ── 4. Double authentification ─────────────────────────────────────────── %>
-<% if Setting.twofa? %>
-  <div class="box">
-    <h3><%= l(:stronger_section_2fa) %></h3>
+<%# ── 4. Comptes utilisant l'API ──────────────────────────────────────────── %>
+<div class="box">
+  <h3><%= l(:stronger_section_api_users, limit: RedmineStronger::SecurityMetrics::API_USERS_LIMIT) %></h3>
 
-    <% if @users_without_2fa_count == 0 %>
-      <p class="icon icon-check-ok"><%= l(:stronger_all_users_have_2fa) %></p>
-    <% else %>
-      <p class="stronger-alert">
-        <%= l(:stronger_users_without_2fa_count, count: @users_without_2fa_count) %>
-      </p>
-      <% if @users_without_2fa.empty? %>
-        <%# Count exceeds threshold: listing individuals is not actionable %>
-        <p>
-          <%= l(:stronger_too_many_to_list,
-                count: @users_without_2fa_count,
-                threshold: RedmineStronger::SecurityMetrics::LARGE_COUNT_THRESHOLD) %>
-        </p>
-      <% else %>
-        <table class="list">
-          <thead>
+  <% if @api_users.empty? %>
+    <p class="icon icon-check-ok"><%= l(:stronger_no_api_users) %></p>
+  <% else %>
+    <table class="list">
+      <thead>
+        <tr>
+          <th><%= l(:field_login) %></th>
+          <th><%= l(:field_user) %></th>
+          <th><%= l(:stronger_api_last_used_at) %></th>
+          <th><%= l(:field_trusted_api_user) %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @api_users.each do |token| %>
+          <% user = token.user %>
+          <% next unless user %>
           <tr>
-            <th><%= l(:field_login) %></th>
-            <th><%= l(:field_user) %></th>
-            <th><%= l(:field_last_login_on) %></th>
+            <td><%= link_to user.login, edit_user_path(user) %></td>
+            <td><%= user.name %></td>
+            <td><%= format_time(token.last_used_at) %></td>
+            <td>
+              <% if user.trusted_api_user? %>
+                <span class="icon icon-check-ok"><%= l(:general_text_Yes) %></span>
+              <% else %>
+                <%= l(:general_text_No) %>
+              <% end %>
+            </td>
           </tr>
-          </thead>
-          <tbody>
-          <% @users_without_2fa.each do |user| %>
-            <tr>
-              <td><%= link_to user.login, edit_user_path(user) %></td>
-              <td><%= user.name %></td>
-              <td><%= user.last_login_on ? format_date(user.last_login_on) : l(:stronger_never_logged_in) %></td>
-            </tr>
-          <% end %>
-          </tbody>
-        </table>
-        <% if @users_without_2fa_count > @users_without_2fa.size %>
-          <p class="icon icon-more">
-            <%= l(:stronger_2fa_more,
-                  shown: @users_without_2fa.size,
-                  total: @users_without_2fa_count) %>
-          </p>
         <% end %>
-      <% end %>
-    <% end %>
-  </div>
-<% end %>
+      </tbody>
+    </table>
+  <% end %>
+</div>
 
 <%# ── 5. Comptes verrouillés (brute force) ───────────────────────────────── %>
 <div class="box">

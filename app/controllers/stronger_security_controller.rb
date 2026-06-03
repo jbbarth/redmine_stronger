@@ -35,9 +35,6 @@ class StrongerSecurityController < ApplicationController
                                 .where.not(lock_comment: nil)
                                 .order(updated_on: :desc)
 
-    if Setting.twofa?
-      @users_without_2fa_count = metrics.users_without_2fa.count
-      @users_without_2fa       = @users_without_2fa_count <= threshold ? metrics.users_without_2fa.limit(15) : []
-    end
+    @api_users            = metrics.api_users
   end
 end

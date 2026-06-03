@@ -33,8 +33,7 @@ en:
   stronger_no_locked_users: "No accounts are locked."
   field_lock_comment: "Lock reason"
 
-  stronger_section_2fa: "Two-factor authentication (2FA)"
-  stronger_all_users_have_2fa: "All active users have enabled 2FA."
-  stronger_users_without_2fa_count: "%{count} active user(s) without 2FA."
-  stronger_2fa_more: "%{shown} shown out of %{total} users without 2FA."
+  stronger_section_api_users: "Accounts using the API (last %{limit})"
+  stronger_no_api_users: "No account has authenticated via the API."
+  stronger_api_last_used_at: "Last API usage"
   stronger_too_many_to_list: "The count (%{count}) exceeds the display threshold (%{threshold}). Use an export or filter the users list instead."

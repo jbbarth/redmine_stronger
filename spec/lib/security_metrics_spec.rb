@@ -22,13 +22,21 @@ describe RedmineStronger::SecurityMetrics do
     end
   end
 
-  describe ".users_without_2fa" do
-    it "returns active users with no twofa_scheme" do
-      users = described_class.users_without_2fa
-      users.each do |user|
-        expect(user.active?).to be true
-        expect(user.twofa_scheme).to be_nil
-      end
+  describe ".api_users" do
+    it "returns only API tokens that have been used, most recently used first" do
+      old   = Token.create!(user: User.find(2), action: 'api', value: 'a' * 40, last_used_at: 2.days.ago)
+      recent = Token.create!(user: User.find(3), action: 'api', value: 'b' * 40, last_used_at: 1.hour.ago)
+      Token.create!(user: User.find(4), action: 'api', value: 'c' * 40, last_used_at: nil)
+
+      result = described_class.api_users.to_a
+
+      expect(result).to include(old, recent)
+      expect(result.map(&:last_used_at)).to eq(result.map(&:last_used_at).sort.reverse)
+      expect(result).to all(satisfy { |t| t.action == 'api' && t.last_used_at.present? })
+    end
+
+    it "is limited to API_USERS_LIMIT records" do
+      expect(described_class.api_users.size).to be <= RedmineStronger::SecurityMetrics::API_USERS_LIMIT
     end
   end
 
