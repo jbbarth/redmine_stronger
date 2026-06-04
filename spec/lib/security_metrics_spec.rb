@@ -45,4 +45,25 @@ describe RedmineStronger::SecurityMetrics do
       expect(described_class.inactive_users_count).to be_a(Integer)
     end
   end
+
+  describe ".inactive_admins" do
+    it "returns inactive users who are admins or sudoers" do
+      admin = User.find_by_login("admin")
+      admin.update_column(:last_login_on, (RedmineStronger::SecurityMetrics::INACTIVE_DAYS + 1).days.ago)
+
+      result = described_class.inactive_admins
+      expect(result).to include(admin)
+      result.each do |user|
+        is_admin = user.admin? || (user.respond_to?(:sudoer?) && user.sudoer?)
+        expect(is_admin).to be true
+      end
+    end
+
+    it "excludes recently active admins" do
+      admin = User.find_by_login("admin")
+      admin.update_column(:last_login_on, Time.now)
+
+      expect(described_class.inactive_admins).not_to include(admin)
+    end
+  end
 end

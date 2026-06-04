@@ -29,7 +29,14 @@ class StrongerSecurityController < ApplicationController
     threshold = metrics::LARGE_COUNT_THRESHOLD
 
     @inactive_users_count = metrics.inactive_users_count
-    @inactive_users       = @inactive_users_count <= threshold ? metrics.inactive_users : []
+    if @inactive_users_count <= threshold
+      @inactive_users  = metrics.inactive_users
+      @inactive_admins = []
+    else
+      # Too many to list individually: surface at least the inactive admins.
+      @inactive_users  = []
+      @inactive_admins = metrics.inactive_admins
+    end
 
     @locked_users         = User.where(status: Principal::STATUS_LOCKED)
                                 .where.not(lock_comment: nil)

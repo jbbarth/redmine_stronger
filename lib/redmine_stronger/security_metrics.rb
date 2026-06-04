@@ -32,18 +32,32 @@ module RedmineStronger
     end
 
     # Active users who haven't logged in for INACTIVE_DAYS days (or never).
-    def self.inactive_users
+    def self.inactive_users_scope
       User.active
           .where("last_login_on IS NULL OR last_login_on < ?", INACTIVE_DAYS.days.ago)
           .order(Arel.sql("last_login_on ASC NULLS FIRST"))
-          .limit(INACTIVE_USERS_LIMIT)
+    end
+
+    def self.inactive_users
+      inactive_users_scope.limit(INACTIVE_USERS_LIMIT)
     end
 
     # Count of active users who haven't logged in for INACTIVE_DAYS days (or never).
     def self.inactive_users_count
-      User.active
-          .where("last_login_on IS NULL OR last_login_on < ?", INACTIVE_DAYS.days.ago)
-          .count
+      inactive_users_scope.count
+    end
+
+    # Inactive users with administrative privileges (admins and, when the
+    # redmine_sudo plugin is installed, sudoers). Shown even when the full
+    # inactive list is too large to display, since stale admin accounts are
+    # the highest-risk subset.
+    def self.inactive_admins
+      scope = inactive_users_scope
+      if User.column_names.include?('sudoer')
+        scope.where("admin = ? OR sudoer = ?", true, true)
+      else
+        scope.where(admin: true)
+      end
     end
 
     # API tokens that have been used to authenticate, most recently used first.

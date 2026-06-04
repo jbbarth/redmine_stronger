@@ -1,3 +1,7 @@
+<% content_for :header_tags do %>
+  <%= stylesheet_link_tag 'stronger', plugin: 'redmine_stronger' %>
+<% end %>
+
 <h2><%= l(:label_stronger_security_dashboard) %></h2>
 
 <%# ── 1. Visibilité sans connexion (Anonymous) ───────────────────────────── %>
@@ -93,6 +97,29 @@
             count: @inactive_users_count,
             threshold: RedmineStronger::SecurityMetrics::LARGE_COUNT_THRESHOLD) %>
     </p>
+    <% if @inactive_admins.present? %>
+      <h4><%= l(:stronger_inactive_admins) %></h4>
+      <table class="list">
+        <thead>
+          <tr>
+            <th><%= l(:field_login) %></th>
+            <th><%= l(:field_user) %></th>
+            <th><%= l(:field_last_login_on) %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @inactive_admins.each do |user| %>
+            <tr>
+              <td><%= link_to user.login, edit_user_path(user) %><%= stronger_admin_badge(user) %></td>
+              <td><%= user.name %></td>
+              <td class="<%= user.last_login_on ? '' : 'stronger-never-logged' %>">
+                <%= user.last_login_on ? format_date(user.last_login_on) : l(:stronger_never_logged_in) %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
   <% else %>
     <table class="list">
       <thead>
@@ -105,7 +132,7 @@
       <tbody>
         <% @inactive_users.each do |user| %>
           <tr>
-            <td><%= link_to user.login, edit_user_path(user) %></td>
+            <td><%= link_to user.login, edit_user_path(user) %><%= stronger_admin_badge(user) %></td>
             <td><%= user.name %></td>
             <td class="<%= user.last_login_on ? '' : 'stronger-never-logged' %>">
               <%= user.last_login_on ? format_date(user.last_login_on) : l(:stronger_never_logged_in) %>
@@ -145,7 +172,7 @@
           <% user = token.user %>
           <% next unless user %>
           <tr>
-            <td><%= link_to user.login, edit_user_path(user) %></td>
+            <td><%= link_to user.login, edit_user_path(user) %><%= stronger_admin_badge(user) %></td>
             <td><%= user.name %></td>
             <td><%= format_time(token.last_used_at) %></td>
             <td>
@@ -177,7 +204,7 @@
       <tbody>
         <% @locked_users.each do |user| %>
           <tr>
-            <td><%= link_to user.login, edit_user_path(user) %></td>
+            <td><%= link_to user.login, edit_user_path(user) %><%= stronger_admin_badge(user) %></td>
             <td><%= user.name %></td>
             <td><%= h user.lock_comment %></td>
           </tr>

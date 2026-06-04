@@ -28,6 +28,7 @@ en:
   stronger_no_inactive_users: "No active accounts inactive for more than %{days} days."
   stronger_never_logged_in: "Never logged in"
   stronger_inactive_users_more: "%{shown} shown out of %{total} inactive accounts."
+  stronger_inactive_admins: "Inactive administrators"
 
   stronger_section_locked_users: "Locked accounts (brute force protection)"
   stronger_no_locked_users: "No accounts are locked."
@@ -37,3 +38,5 @@ en:
   stronger_no_api_users: "No account has authenticated via the API."
   stronger_api_last_used_at: "Last API usage"
   stronger_too_many_to_list: "The count (%{count}) exceeds the display threshold (%{threshold}). Use an export or filter the users list instead."
+
+  stronger_admin_badge: "Admin"
