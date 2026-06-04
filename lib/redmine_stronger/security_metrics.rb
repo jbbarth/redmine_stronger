@@ -32,9 +32,16 @@ module RedmineStronger
     end
 
     # Active users who haven't logged in for INACTIVE_DAYS days (or never).
+    # API usage counts as activity: last_login_on is not updated on API key
+    # authentication, so users whose API token was used recently are excluded.
     def self.inactive_users_scope
+      cutoff = INACTIVE_DAYS.days.ago
+      recent_api_user_ids = Token.where(action: 'api')
+                                 .where('last_used_at >= ?', cutoff)
+                                 .select(:user_id)
       User.active
-          .where("last_login_on IS NULL OR last_login_on < ?", INACTIVE_DAYS.days.ago)
+          .where("last_login_on IS NULL OR last_login_on < ?", cutoff)
+          .where.not(id: recent_api_user_ids)
           .order(Arel.sql("last_login_on ASC NULLS FIRST"))
     end
 

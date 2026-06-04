@@ -20,6 +20,24 @@ describe RedmineStronger::SecurityMetrics do
     it "is limited to INACTIVE_USERS_LIMIT records" do
       expect(described_class.inactive_users.size).to be <= RedmineStronger::SecurityMetrics::INACTIVE_USERS_LIMIT
     end
+
+    it "excludes users who used the API recently even if they never logged in via the web" do
+      user = User.find(2)
+      user.update_column(:last_login_on, nil)
+      expect(described_class.inactive_users_scope).to include(user)
+
+      Token.create!(user: user, action: 'api', value: 'a' * 40, last_used_at: 1.day.ago)
+      expect(described_class.inactive_users_scope).not_to include(user)
+    end
+
+    it "still considers users inactive when their API token is stale" do
+      user = User.find(2)
+      user.update_column(:last_login_on, nil)
+      Token.create!(user: user, action: 'api', value: 'b' * 40,
+                    last_used_at: (RedmineStronger::SecurityMetrics::INACTIVE_DAYS + 1).days.ago)
+
+      expect(described_class.inactive_users_scope).to include(user)
+    end
   end
 
   describe ".api_users" do
