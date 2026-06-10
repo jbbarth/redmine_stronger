@@ -17,7 +17,9 @@
           <th><%= l(:field_login) %></th>
           <th><%= l(:field_user) %></th>
           <th><%= l(:stronger_api_last_used_at) %></th>
-          <th><%= l(:field_trusted_api_user) %></th>
+          <% if stronger_trusted_api_user_supported? %>
+            <th><%= l(:field_trusted_api_user) %></th>
+          <% end %>
         </tr>
       </thead>
       <tbody>
@@ -28,10 +30,12 @@
             <td><%= link_to user.login, edit_user_path(user) %><%= stronger_admin_badge(user) %></td>
             <td><%= user.name %></td>
             <td><%= format_time(token.last_used_at) %></td>
-            <td>
-              <%= checked_image(user.trusted_api_user?) %>
-              <%= user.trusted_api_user? ? l(:general_text_Yes) : l(:general_text_No) %>
-            </td>
+            <% if stronger_trusted_api_user_supported? %>
+              <td>
+                <%= checked_image(user.trusted_api_user?) %>
+                <%= user.trusted_api_user? ? l(:general_text_Yes) : l(:general_text_No) %>
+              </td>
+            <% end %>
           </tr>
         <% end %>
       </tbody>

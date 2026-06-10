@@ -10,4 +10,8 @@ module StrongerSecurityHelper
 
     content_tag(:span, l(:stronger_admin_badge), class: 'stronger-admin-badge')
   end
+
+  def stronger_trusted_api_user_supported?
+    User.column_names.include?('trusted_api_user')
+  end
 end
