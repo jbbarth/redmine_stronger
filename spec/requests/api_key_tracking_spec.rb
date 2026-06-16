@@ -13,10 +13,10 @@ describe "API key session tracking" do
     Token.create!(user: user, action: 'api').value
   end
 
-  def api_get(key:, ip: '1.2.3.4')
+  def api_get(key:, ip: '1.2.3.4', env: {})
     get "/projects.json",
         params: { key: key },
-        env: { 'REMOTE_ADDR' => ip }
+        env: { 'REMOTE_ADDR' => ip }.merge(env)
   end
 
   before do
@@ -38,6 +38,18 @@ describe "API key session tracking" do
     api_get(key: api_key, ip: '10.20.30.40')
     session = UserLoginSession.where(user_id: user.id, auth_method: 'api_key').last
     expect(session.ip_address).to eq('10.20.30.40')
+  end
+
+  it "records the provenance from the X-Provenance header" do
+    api_get(key: api_key, ip: '7.7.7.7', env: { 'HTTP_X_PROVENANCE' => 'intranet' })
+    session = UserLoginSession.where(user_id: user.id, auth_method: 'api_key').last
+    expect(session.provenance).to eq('intranet')
+  end
+
+  it "leaves the provenance nil when the header is absent" do
+    api_get(key: api_key, ip: '8.8.8.8')
+    session = UserLoginSession.where(user_id: user.id, auth_method: 'api_key').last
+    expect(session.provenance).to be_nil
   end
 
   it "does not create a second session for the same IP within 1 day" do

@@ -43,5 +43,6 @@ class StrongerSecurityController < ApplicationController
                                 .order(updated_on: :desc)
 
     @api_users            = metrics.api_users
+    @api_user_provenances = metrics.api_user_provenances(@api_users.map(&:user_id))
   end
 end

@@ -1,0 +1,18 @@
+<div class="box tabular settings">
+  <p>
+    <label><%= l(:stronger_setting_provenance_header) %></label>
+    <%= text_field_tag 'settings[provenance_header]',
+          @settings['provenance_header'],
+          size: 40 %>
+    <em class="info"><%= l(:stronger_setting_provenance_header_info) %></em>
+  </p>
+
+  <p>
+    <label><%= l(:stronger_setting_provenance_intranet_value) %></label>
+    <%= text_field_tag 'settings[provenance_intranet_value]',
+          @settings['provenance_intranet_value'],
+          size: 40 %>
+    <em class="info"><%= l(:stronger_setting_provenance_intranet_value_info) %></em>
+  </p>
+
+</div>

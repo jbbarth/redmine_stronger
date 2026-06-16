@@ -31,6 +31,7 @@ module RedmineStronger
         ip_address:   ip,
         user_agent:   ua[0, 512],
         auth_method:  'api_key',
+        provenance:   RedmineStronger::Provenance.from_request(request),
         os:           UserLoginSession.parse_os(ua),
         device_type:  UserLoginSession.parse_device_type(ua)
       )

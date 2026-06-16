@@ -15,6 +15,9 @@ the API HTTP Basic authentication, which share the same failure counter. A locke
 automatically after a short delay (or manually by an administrator). The counter is reset on each successful
 login, so legitimate users are rarely affected.
 
+* *Security dashboard* (Administration menu) : surfaces accounts using the API, anonymous/non-member
+issue exposure, inactive accounts and locked accounts.
+
 Install
 -------
 

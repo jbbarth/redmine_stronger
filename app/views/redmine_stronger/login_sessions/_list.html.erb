@@ -12,6 +12,7 @@
           <th><%= l(:label_date) %></th>
           <th><%= l(:stronger_column_device) %></th>
           <th><%= l(:stronger_column_auth_method) %></th>
+          <th><%= l(:stronger_column_provenance) %></th>
         </tr>
       </thead>
       <tbody>
@@ -28,6 +29,7 @@
                 <%= l(:"stronger_auth_method_#{session.auth_method}", default: session.auth_method.to_s.upcase) %>
               </span>
             </td>
+            <td><%= render 'redmine_stronger/provenance_badge', provenance: session.provenance %></td>
           </tr>
         <% end %>
       </tbody>

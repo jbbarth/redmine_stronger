@@ -75,5 +75,15 @@ module RedmineStronger
            .order(last_used_at: :desc)
            .limit(API_USERS_LIMIT)
     end
+
+    # Maps user_id => most recent provenance recorded on an API key session.
+    def self.api_user_provenances(user_ids)
+      return {} if user_ids.blank?
+      UserLoginSession.where(user_id: user_ids, auth_method: 'api_key')
+                      .where.not(provenance: nil)
+                      .order(logged_in_at: :desc)
+                      .pluck(:user_id, :provenance)
+                      .each_with_object({}) { |(uid, prov), h| h[uid] ||= prov }
+    end
   end
 end

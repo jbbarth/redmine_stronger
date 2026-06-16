@@ -9,6 +9,11 @@ Redmine::Plugin.register :redmine_stronger do
   requires_redmine_plugin :redmine_base_rspec, :version_or_higher => '0.0.3' if Rails.env.test?
   requires_redmine_plugin :redmine_base_deface, :version_or_higher => '0.0.1'
 
+  settings default: {
+    'provenance_header' => 'X-Provenance',
+    'provenance_intranet_value' => 'intranet'
+  }, partial: 'settings/redmine_stronger'
+
   menu :admin_menu, :stronger_security,
        { controller: 'stronger_security', action: 'index' },
        caption: :label_stronger_security_dashboard,
@@ -19,6 +24,7 @@ module RedmineStronger
   class ModelHook < Redmine::Hook::Listener
     def after_plugins_loaded(_context = {})
       require_relative "lib/redmine_stronger/brute_force"
+      require_relative "lib/redmine_stronger/provenance"
       require_relative "lib/redmine_stronger/account_controller_patch"
       require_relative "lib/redmine_stronger/application_controller_patch"
       require_relative "lib/redmine_stronger/users_controller_patch"

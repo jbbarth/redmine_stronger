@@ -58,6 +58,33 @@ describe RedmineStronger::SecurityMetrics do
     end
   end
 
+  describe ".api_user_provenances" do
+    let(:user) { User.find(2) }
+
+    it "returns the most recent provenance per user from api_key sessions" do
+      UserLoginSession.create!(user: user, logged_in_at: 2.days.ago, auth_method: 'api_key', provenance: 'internet')
+      UserLoginSession.create!(user: user, logged_in_at: 1.hour.ago, auth_method: 'api_key', provenance: 'intranet')
+
+      expect(described_class.api_user_provenances([user.id])).to eq(user.id => 'intranet')
+    end
+
+    it "ignores sessions without a provenance" do
+      UserLoginSession.create!(user: user, logged_in_at: 1.hour.ago, auth_method: 'api_key', provenance: nil)
+
+      expect(described_class.api_user_provenances([user.id])).to eq({})
+    end
+
+    it "ignores non-api_key sessions" do
+      UserLoginSession.create!(user: user, logged_in_at: 1.hour.ago, auth_method: 'password', provenance: 'intranet')
+
+      expect(described_class.api_user_provenances([user.id])).to eq({})
+    end
+
+    it "returns an empty hash when given no user ids" do
+      expect(described_class.api_user_provenances([])).to eq({})
+    end
+  end
+
   describe ".inactive_users_count" do
     it "returns an integer" do
       expect(described_class.inactive_users_count).to be_a(Integer)

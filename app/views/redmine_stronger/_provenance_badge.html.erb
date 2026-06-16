@@ -1,0 +1,6 @@
+<% zone = RedmineStronger::Provenance.classify(provenance) %>
+<% if zone %>
+  <span class="stronger-provenance stronger-provenance-<%= zone %>" title="<%= h provenance %>"><%= l(:"stronger_provenance_#{zone}") %></span>
+<% else %>
+  <span class="stronger-provenance stronger-provenance-unknown"><%= l(:stronger_provenance_unknown) %></span>
+<% end %>
