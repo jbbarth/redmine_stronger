@@ -6,7 +6,7 @@
 
 <%# ── Comptes utilisant l'API ──────────────────────────────────────────────── %>
 <div class="box">
-  <h3><%= l(:stronger_section_api_users, limit: RedmineStronger::SecurityMetrics::API_USERS_LIMIT) %></h3>
+  <h3><%= l(:stronger_section_api_users, count: @api_users_count) %></h3>
 
   <% if @api_users.empty? %>
     <p class="icon icon-check-ok"><%= l(:stronger_no_api_users) %></p>
@@ -42,6 +42,7 @@
         <% end %>
       </tbody>
     </table>
+    <span class="pagination"><%= pagination_links_full @api_users_pages %></span>
   <% end %>
 </div>
 

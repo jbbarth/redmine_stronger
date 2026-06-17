@@ -40,21 +40,21 @@ describe RedmineStronger::SecurityMetrics do
     end
   end
 
-  describe ".api_users" do
+  describe ".api_users_scope" do
     it "returns only API tokens that have been used, most recently used first" do
       old   = Token.create!(user: User.find(2), action: 'api', value: 'a' * 40, last_used_at: 2.days.ago)
       recent = Token.create!(user: User.find(3), action: 'api', value: 'b' * 40, last_used_at: 1.hour.ago)
       Token.create!(user: User.find(4), action: 'api', value: 'c' * 40, last_used_at: nil)
 
-      result = described_class.api_users.to_a
+      result = described_class.api_users_scope.to_a
 
       expect(result).to include(old, recent)
       expect(result.map(&:last_used_at)).to eq(result.map(&:last_used_at).sort.reverse)
       expect(result).to all(satisfy { |t| t.action == 'api' && t.last_used_at.present? })
     end
 
-    it "is limited to API_USERS_LIMIT records" do
-      expect(described_class.api_users.size).to be <= RedmineStronger::SecurityMetrics::API_USERS_LIMIT
+    it "is an unlimited scope the controller paginates" do
+      expect(described_class.api_users_scope.limit_value).to be_nil
     end
   end
 

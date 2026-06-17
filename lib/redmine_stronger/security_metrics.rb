@@ -5,7 +5,7 @@ module RedmineStronger
     INACTIVE_DAYS        = 360
     TOP_PROJECTS_LIMIT   = 10
     INACTIVE_USERS_LIMIT = 15
-    API_USERS_LIMIT      = 25
+    API_USERS_PER_PAGE   = 25
     # Above this threshold, individual user lists are not shown (count only).
     LARGE_COUNT_THRESHOLD = 50
 
@@ -68,12 +68,11 @@ module RedmineStronger
     end
 
     # API tokens that have been used to authenticate, most recently used first.
-    def self.api_users
+    def self.api_users_scope
       Token.where(action: 'api')
            .where.not(last_used_at: nil)
            .includes(:user)
            .order(last_used_at: :desc)
-           .limit(API_USERS_LIMIT)
     end
 
     # Maps user_id => most recent provenance recorded on an API key session.

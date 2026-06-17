@@ -42,7 +42,14 @@ class StrongerSecurityController < ApplicationController
                                 .where.not(lock_comment: nil)
                                 .order(updated_on: :desc)
 
-    @api_users            = metrics.api_users
+    api_users_scope       = metrics.api_users_scope
+    @api_users_count      = api_users_scope.count
+    @api_users_pages      = Redmine::Pagination::Paginator.new(
+      @api_users_count, metrics::API_USERS_PER_PAGE, params[:page]
+    )
+    @api_users            = api_users_scope.limit(@api_users_pages.per_page)
+                                           .offset(@api_users_pages.offset)
+                                           .to_a
     @api_user_provenances = metrics.api_user_provenances(@api_users.map(&:user_id))
   end
 end
