@@ -9,14 +9,17 @@ Current features
 ----------------
 
 * *Anti-brute-force system* : Redmine's authentication is fragile against dictionary attacks, especially if you
-have a lot of users and can't manage their password policy. This feature locks any user account after 5 failed
-password attempts. Protection applies to every password-based authentication channel: the web login form **and**
-the API HTTP Basic authentication, which share the same failure counter. A locked account is unlocked
-automatically after a short delay (or manually by an administrator). The counter is reset on each successful
-login, so legitimate users are rarely affected.
+  have a lot of users and can't manage their password policy. This feature locks any user account after 5 failed
+  password attempts. Protection applies to every password-based authentication channel: the web login form **and**
+  the API HTTP Basic authentication, which share the same failure counter. A locked account is unlocked
+  automatically after a short delay (or manually by an administrator). The counter is reset on each successful
+  login, so legitimate users are rarely affected.
 
 * *Security dashboard* (Administration menu) : surfaces accounts using the API, anonymous/non-member
-issue exposure, inactive accounts and locked accounts.
+  issue exposure, inactive accounts and locked accounts.
+
+* *Intranet-only API* : optionally rejects API-key requests that do not originate from the intranet zone.
+  Disabled by default.
 
 Install
 -------
@@ -26,10 +29,13 @@ This plugin is compatible with Redmine 2.1.x and later.
 You can first take a look at general instructions for plugins [here](http://www.redmine.org/wiki/redmine/Plugins).
 
 This plugin has one dependency:
+
 * install the redmine_base_deface plugin (see [here](https://github.com/jbbarth/redmine_base_deface))
 
 Then:
-* clone this repository in your "plugins/" directory ; if you have a doubt you put it at the good level, you can check you have a plugins/redmine_stronger/init.rb file
+
+* clone this repository in your "plugins/" directory ; if you have a doubt you put it at the good level, you can check
+  you have a plugins/redmine_stronger/init.rb file
 * run the migrations from your redmine root directory with command : `RAILS_ENV=production rake redmine:plugins`
 * install dependencies (gems) by running the following command: `bundle install`
 * restart your Redmine instance (depends on how you host it)
@@ -41,21 +47,25 @@ Requirements:
 Test status
 ------------
 
-|Plugin branch| Redmine Version | Test Status       |
-|-------------|-----------------|-------------------|
-|master       | 6.0.10          | [![6.0.10][1]][5] |
-|master       | 6.1.3           | [![6.1.3][2]][5]  |
-|master       | master          | [![master][3]][5] |
+| Plugin branch | Redmine Version | Test Status       |
+|---------------|-----------------|-------------------|
+| master        | 6.0.10          | [![6.0.10][1]][5] |
+| master        | 6.1.3           | [![6.1.3][2]][5]  |
+| master        | master          | [![master][3]][5] |
 
 [1]: https://github.com/jbbarth/redmine_stronger/actions/workflows/6_0_10.yml/badge.svg
+
 [2]: https://github.com/jbbarth/redmine_stronger/actions/workflows/6_1_3.yml/badge.svg
+
 [3]: https://github.com/jbbarth/redmine_stronger/actions/workflows/master.yml/badge.svg
+
 [5]: https://github.com/jbbarth/redmine_stronger/actions
 
 Contribute
 ----------
 
 If you like this plugin, it's a good idea to contribute:
+
 * by giving feed back on what is cool, what should be improved
 * by reporting bugs : you can open issues directly on github
 * by forking it and sending pull request if you have a patch or a feature you want to implement

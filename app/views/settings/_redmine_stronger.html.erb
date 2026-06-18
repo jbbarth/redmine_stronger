@@ -15,4 +15,11 @@
     <em class="info"><%= l(:stronger_setting_provenance_intranet_value_info) %></em>
   </p>
 
+  <p>
+    <label><%= l(:stronger_setting_block_internet_api) %></label>
+    <%= hidden_field_tag 'settings[block_internet_api]', '' %>
+    <%= check_box_tag 'settings[block_internet_api]', '1', @settings['block_internet_api'] == '1' %>
+    <em class="info"><%= l(:stronger_setting_block_internet_api_info) %></em>
+  </p>
+
 </div>

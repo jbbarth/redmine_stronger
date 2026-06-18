@@ -11,7 +11,8 @@ Redmine::Plugin.register :redmine_stronger do
 
   settings default: {
     'provenance_header' => 'X-Provenance',
-    'provenance_intranet_value' => 'intranet'
+    'provenance_intranet_value' => 'intranet',
+    'block_internet_api' => ''
   }, partial: 'settings/redmine_stronger'
 
   menu :admin_menu, :stronger_security,

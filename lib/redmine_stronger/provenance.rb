@@ -27,6 +27,12 @@ module RedmineStronger
       raw.casecmp?(intranet_value) ? :intranet : :internet
     end
 
+    # True only when the request explicitly comes from the intranet zone.
+    # A missing/blank provenance header is therefore treated as non-intranet.
+    def self.intranet?(req)
+      classify(from_request(req)) == :intranet
+    end
+
     def self.setting(key)
       Setting['plugin_redmine_stronger'][key].presence
     rescue StandardError

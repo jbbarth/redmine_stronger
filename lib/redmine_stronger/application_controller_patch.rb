@@ -8,13 +8,34 @@ module RedmineStronger
       track_api_key_session
     end
 
+    # Rejects API-key requests that do not originate from the intranet zone,
+    # when the restriction is enabled. Session-authenticated requests (no API
+    # key) are never affected. Runs after user_setup, so the attempt is still
+    # recorded on the security dashboard before being blocked.
+    def enforce_intranet_only_api
+      return unless stronger_block_internet_api?
+      return unless stronger_api_key_request?
+      return if RedmineStronger::Provenance.intranet?(request)
+
+      render_403(message: :stronger_error_api_internet_blocked)
+    end
+
     private
 
+    def stronger_api_key_request?
+      accept_api_auth? && Setting.rest_api_enabled? && api_key_from_request.present?
+    end
+
+    def stronger_block_internet_api?
+      Setting['plugin_redmine_stronger']['block_internet_api'] == '1'
+    rescue StandardError
+      false
+    end
+
     def track_api_key_session
-      return unless accept_api_auth? && Setting.rest_api_enabled?
+      return unless stronger_api_key_request?
 
       key = api_key_from_request
-      return if key.blank?
 
       # When the account is locked the API authentication fails, so User.current
       # stays anonymous. We still resolve the owner from the token so the attempt
@@ -58,3 +79,7 @@ module RedmineStronger
 end
 
 ApplicationController.prepend RedmineStronger::ApplicationControllerPatch
+
+unless ApplicationController._process_action_callbacks.map(&:filter).include?(:enforce_intranet_only_api)
+  ApplicationController.before_action :enforce_intranet_only_api
+end
