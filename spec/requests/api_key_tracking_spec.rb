@@ -89,4 +89,24 @@ describe "API key session tracking" do
       api_get(key: 'invalidkeyvalue0000000000000000000000000')
     }.not_to change { UserLoginSession.where(user_id: user.id, auth_method: 'api_key').count }
   end
+
+  context "when the account is locked" do
+    let(:locked_user) { User.find_by_login("jsmith") }
+
+    before { UserLoginSession.where(user_id: locked_user.id).delete_all }
+
+    it "records the locked account's API attempt with its provenance" do
+      key = Token.create!(user: locked_user, action: 'api').value
+      locked_user.lock!
+
+      expect {
+        api_get(key: key, ip: '9.9.9.9', env: { 'HTTP_X_PROVENANCE' => 'intranet' })
+      }.to change {
+        UserLoginSession.where(user_id: locked_user.id, auth_method: 'api_key').count
+      }.by(1)
+
+      session = UserLoginSession.where(user_id: locked_user.id, auth_method: 'api_key').last
+      expect(session.provenance).to eq('intranet')
+    end
+  end
 end

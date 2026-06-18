@@ -5,20 +5,32 @@ module RedmineStronger
 
     def user_setup
       super
-      track_api_key_session if api_key_auth_request?
+      track_api_key_session
     end
 
     private
 
-    def api_key_auth_request?
-      accept_api_auth? &&
-        Setting.rest_api_enabled? &&
-        api_key_from_request.present? &&
-        User.current.is_a?(User) && User.current.logged?
+    def track_api_key_session
+      return unless accept_api_auth? && Setting.rest_api_enabled?
+
+      key = api_key_from_request
+      return if key.blank?
+
+      # When the account is locked the API authentication fails, so User.current
+      # stays anonymous. We still resolve the owner from the token so the attempt
+      # (and its provenance) is recorded on the security dashboard.
+      user =
+        if User.current.is_a?(User) && User.current.logged?
+          User.current
+        else
+          Token.find_token('api', key)&.user
+        end
+      return unless user
+
+      record_api_key_session(user)
     end
 
-    def track_api_key_session
-      user = User.current
+    def record_api_key_session(user)
       ip = request.remote_ip
       last = UserLoginSession.where(user_id: user.id, auth_method: 'api_key', ip_address: ip)
                              .order(logged_in_at: :desc).first

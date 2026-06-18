@@ -27,7 +27,7 @@
         <% @api_users.each do |token| %>
           <% user = token.user %>
           <% next unless user %>
-          <tr>
+          <tr class="<%= user.css_classes %>">
             <td><%= link_to user.login, edit_user_path(user) %><%= stronger_admin_badge(user) %></td>
             <td><%= user.name %></td>
             <td><%= format_time(token.last_used_at) %></td>
