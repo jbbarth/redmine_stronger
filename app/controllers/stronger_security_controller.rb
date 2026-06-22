@@ -51,5 +51,6 @@ class StrongerSecurityController < ApplicationController
                                            .offset(@api_users_pages.offset)
                                            .to_a
     @api_user_provenances = metrics.api_user_provenances(@api_users.map(&:user_id))
+    @api_user_outcomes    = metrics.api_user_outcomes(@api_users.map(&:user_id))
   end
 end

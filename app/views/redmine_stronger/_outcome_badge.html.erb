@@ -1,0 +1,2 @@
+<% value = local_assigns[:outcome].presence || UserLoginSession::OUTCOME_SUCCESS %>
+<span class="stronger-outcome stronger-outcome-<%= h value %>"><%= l(:"stronger_outcome_#{value}", default: value.to_s.capitalize) %></span>

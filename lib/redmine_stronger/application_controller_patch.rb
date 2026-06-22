@@ -39,21 +39,25 @@ module RedmineStronger
 
       # When the account is locked the API authentication fails, so User.current
       # stays anonymous. We still resolve the owner from the token so the attempt
-      # (and its provenance) is recorded on the security dashboard.
-      user =
-        if User.current.is_a?(User) && User.current.logged?
-          User.current
-        else
-          Token.find_token('api', key)&.user
-        end
+      # is recorded on the security dashboard.
+      if User.current.is_a?(User) && User.current.logged?
+        user    = User.current
+        blocked = stronger_block_internet_api? &&
+                  !RedmineStronger::Provenance.intranet?(request)
+        outcome = blocked ? UserLoginSession::OUTCOME_BLOCKED : UserLoginSession::OUTCOME_SUCCESS
+      else
+        user    = Token.find_token('api', key)&.user
+        outcome = UserLoginSession::OUTCOME_DENIED
+      end
       return unless user
 
-      record_api_key_session(user)
+      record_api_key_session(user, outcome)
     end
 
-    def record_api_key_session(user)
+    def record_api_key_session(user, outcome)
       ip = request.remote_ip
-      last = UserLoginSession.where(user_id: user.id, auth_method: 'api_key', ip_address: ip)
+      last = UserLoginSession.where(user_id: user.id, auth_method: 'api_key',
+                                    ip_address: ip, outcome: outcome)
                              .order(logged_in_at: :desc).first
       return if last && last.logged_in_at > 1.day.ago
 
@@ -64,6 +68,7 @@ module RedmineStronger
         ip_address:   ip,
         user_agent:   ua[0, 512],
         auth_method:  'api_key',
+        outcome:      outcome,
         provenance:   RedmineStronger::Provenance.from_request(request),
         os:           UserLoginSession.parse_os(ua),
         device_type:  UserLoginSession.parse_device_type(ua)

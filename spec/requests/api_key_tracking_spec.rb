@@ -107,6 +107,28 @@ describe "API key session tracking" do
 
       session = UserLoginSession.where(user_id: locked_user.id, auth_method: 'api_key').last
       expect(session.provenance).to eq('intranet')
+      expect(session.outcome).to eq(UserLoginSession::OUTCOME_DENIED)
+    end
+  end
+
+  describe "outcome" do
+    it "records 'success' for an active account whose request is allowed" do
+      api_get(key: api_key, ip: '3.3.3.3')
+      session = UserLoginSession.where(user_id: user.id, auth_method: 'api_key').last
+      expect(session.outcome).to eq(UserLoginSession::OUTCOME_SUCCESS)
+    end
+
+    it "records a separate row when the outcome changes for the same IP and day" do
+      key = api_key
+      api_get(key: key, ip: '4.4.4.4') # success
+      user.lock!
+      expect {
+        api_get(key: key, ip: '4.4.4.4') # now denied
+      }.to change {
+        UserLoginSession.where(user_id: user.id, auth_method: 'api_key').count
+      }.by(1)
+      outcomes = UserLoginSession.where(user_id: user.id, auth_method: 'api_key').pluck(:outcome)
+      expect(outcomes).to include(UserLoginSession::OUTCOME_SUCCESS, UserLoginSession::OUTCOME_DENIED)
     end
   end
 end

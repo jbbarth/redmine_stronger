@@ -7,6 +7,11 @@ class UserLoginSession < ActiveRecord::Base
   RECENT_DAYS = 7
   RECENT_LIMIT = 5
 
+  # Outcome of a tracked attempt.
+  OUTCOME_SUCCESS = 'success'   # authenticated and authorized
+  OUTCOME_DENIED  = 'denied'    # not-active account (locked / registered)
+  OUTCOME_BLOCKED = 'blocked'   # rejected by the intranet-only API restriction
+
   # Returns sessions to display for a user:
   # all sessions from the last 7 days, plus at least the 5 most recent
   # (in case the user hasn't logged in for more than 7 days).

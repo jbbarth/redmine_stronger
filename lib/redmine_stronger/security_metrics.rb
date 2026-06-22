@@ -84,5 +84,14 @@ module RedmineStronger
                       .pluck(:user_id, :provenance)
                       .each_with_object({}) { |(uid, prov), h| h[uid] ||= prov }
     end
+
+    # Maps user_id => outcome of the most recent API key attempt.
+    def self.api_user_outcomes(user_ids)
+      return {} if user_ids.blank?
+      UserLoginSession.where(user_id: user_ids, auth_method: 'api_key')
+                      .order(logged_in_at: :desc)
+                      .pluck(:user_id, :outcome)
+                      .each_with_object({}) { |(uid, out), h| h[uid] ||= out }
+    end
   end
 end

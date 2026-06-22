@@ -16,7 +16,7 @@ Current features
   login, so legitimate users are rarely affected.
 
 * *Security dashboard* (Administration menu) : surfaces accounts using the API, anonymous/non-member
-  issue exposure, inactive accounts and locked accounts.
+  issue exposure, inactive accounts and locked accounts. Tracked login/API attempts.
 
 * *Intranet-only API* : optionally rejects API-key requests that do not originate from the intranet zone.
   Disabled by default.

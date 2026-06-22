@@ -53,4 +53,10 @@ describe "Intranet-only API restriction" do
     api_get(key: api_key, env: { 'HTTP_X_PROVENANCE' => 'internet' })
     expect(response).to have_http_status(:ok)
   end
+
+  it "records a 'blocked' outcome for a request rejected by the restriction" do
+    api_get(key: api_key, env: { 'HTTP_X_PROVENANCE' => 'internet' })
+    session = UserLoginSession.where(user_id: user.id, auth_method: 'api_key').last
+    expect(session.outcome).to eq(UserLoginSession::OUTCOME_BLOCKED)
+  end
 end

@@ -56,6 +56,16 @@ describe StrongerSecurityController do
         get :index
         expect(assigns(:locked_users)).to be_present.or(be_empty)
       end
+
+      it "assigns @api_user_outcomes mapping the latest API outcome per user" do
+        admin = User.find_by_login("admin")
+        UserLoginSession.create!(user: admin, logged_in_at: Time.now, auth_method: 'api_key',
+                                 outcome: UserLoginSession::OUTCOME_DENIED)
+        Token.create!(user: admin, action: 'api', last_used_at: Time.now)
+
+        get :index
+        expect(assigns(:api_user_outcomes)[admin.id]).to eq(UserLoginSession::OUTCOME_DENIED)
+      end
     end
   end
 end

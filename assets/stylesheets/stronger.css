@@ -55,6 +55,20 @@
   font-weight: normal;
 }
 
+/* Outcome badge (result of a tracked attempt) */
+.stronger-outcome {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.stronger-outcome-success { background-color: #198754; }
+.stronger-outcome-denied  { background-color: #dc3545; }
+.stronger-outcome-blocked { background-color: #fd7e14; }
+
 /* Admin badge (admins and sudoers) */
 .stronger-admin-badge {
   display: inline-block;
