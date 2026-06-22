@@ -46,6 +46,8 @@ fr:
   stronger_setting_provenance_header_info: "En-tête posé par le reverse proxy indiquant la zone d'origine (ex. X-Provenance)."
   stronger_setting_provenance_intranet_value: "Valeur « intranet »"
   stronger_setting_provenance_intranet_value_info: "Valeur de l'en-tête correspondant à l'intranet ; toute autre valeur est considérée comme « internet »."
+  stronger_api_tab_hint_html: "Des options de sécurité supplémentaires pour l'API sont disponibles dans les paramètres du plugin %{link}."
+  stronger_api_tab_hint_link: "Stronger"
   stronger_setting_block_internet_api: "Restreindre l'API à l'intranet"
   stronger_setting_block_internet_api_info: "Si activé, les requêtes par clé API ne provenant pas de l'intranet (selon l'en-tête de provenance) sont rejetées (403). Un en-tête absent est considéré comme « non-intranet ». Les requêtes authentifiées par session ne sont pas affectées."
   stronger_error_api_internet_blocked: "L'accès à l'API est restreint à l'intranet."

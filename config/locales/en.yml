@@ -46,6 +46,8 @@ en:
   stronger_setting_provenance_header_info: "Header set by the reverse proxy indicating the origin zone (e.g. X-Provenance)."
   stronger_setting_provenance_intranet_value: "\"intranet\" value"
   stronger_setting_provenance_intranet_value_info: "Header value that means intranet; any other value is treated as \"internet\"."
+  stronger_api_tab_hint_html: "Additional API security options are available in the %{link} plugin settings."
+  stronger_api_tab_hint_link: "Stronger"
   stronger_setting_block_internet_api: "Restrict the API to the intranet"
   stronger_setting_block_internet_api_info: "When enabled, API-key requests not coming from the intranet (per the provenance header) are rejected with 403. A missing header is treated as non-intranet. Session-authenticated requests are not affected."
   stronger_error_api_internet_blocked: "API access is restricted to the intranet."
