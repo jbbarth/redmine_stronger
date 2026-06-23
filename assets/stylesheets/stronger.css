@@ -80,3 +80,7 @@
   color: #dc3545;
   background-color: #fff;
 }
+
+/* API settings tab hint */
+.stronger-api-hint { margin-top: 1em; }
+.stronger-api-hint a { margin-left: 0.25em; }
