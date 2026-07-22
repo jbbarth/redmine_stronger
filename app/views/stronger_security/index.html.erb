@@ -9,7 +9,7 @@
   <h3><%= l(:stronger_section_api_users, count: @api_users_count) %></h3>
 
   <% if @api_users.empty? %>
-    <p class="icon icon-check-ok"><%= l(:stronger_no_api_users) %></p>
+    <p class="icon icon-ok"><%= sprite_icon('checked') %><%= l(:stronger_no_api_users) %></p>
   <% else %>
     <table class="list">
       <thead>
@@ -53,7 +53,7 @@
   <h3><%= l(:stronger_section_anon_visibility) %></h3>
 
   <% if @anon_total == 0 %>
-    <p class="icon icon-check-ok"><%= l(:stronger_no_exposed_issues) %></p>
+    <p class="icon icon-ok"><%= sprite_icon('checked') %><%= l(:stronger_no_exposed_issues) %></p>
   <% else %>
     <p class="stronger-alert">
       <%= l(:stronger_exposed_issues_summary,
@@ -92,7 +92,7 @@
   <h3><%= l(:stronger_section_non_member_visibility) %></h3>
 
   <% if @non_member_total == 0 %>
-    <p class="icon icon-check-ok"><%= l(:stronger_no_exposed_issues) %></p>
+    <p class="icon icon-ok"><%= sprite_icon('checked') %><%= l(:stronger_no_exposed_issues) %></p>
   <% else %>
     <p class="stronger-alert">
       <%= l(:stronger_exposed_issues_summary,
@@ -133,7 +133,7 @@
              days:  RedmineStronger::SecurityMetrics::INACTIVE_DAYS) %></h3>
 
   <% if @inactive_users_count == 0 %>
-    <p class="icon icon-check-ok"><%= l(:stronger_no_inactive_users) %></p>
+    <p class="icon icon-ok"><%= sprite_icon('checked') %><%= l(:stronger_no_inactive_users) %></p>
   <% elsif @inactive_users.empty? %>
     <%# Count exceeds threshold: listing individuals is not actionable %>
     <p class="stronger-alert">
@@ -186,7 +186,7 @@
       </tbody>
     </table>
     <% if @inactive_users_count > @inactive_users.size %>
-      <p class="icon icon-more">
+      <p class="icon"><%= sprite_icon('3-bullets') %>
         <%= l(:stronger_inactive_users_more,
               shown: @inactive_users.size,
               total: @inactive_users_count) %>
@@ -200,7 +200,7 @@
   <h3><%= l(:stronger_section_locked_users) %></h3>
 
   <% if @locked_users.empty? %>
-    <p class="icon icon-check-ok"><%= l(:stronger_no_locked_users) %></p>
+    <p class="icon icon-ok"><%= sprite_icon('checked') %><%= l(:stronger_no_locked_users) %></p>
   <% else %>
     <table class="list">
       <thead>
