@@ -18,7 +18,8 @@ Redmine::Plugin.register :redmine_stronger do
   menu :admin_menu, :stronger_security,
        { controller: 'stronger_security', action: 'index' },
        caption: :label_stronger_security_dashboard,
-       icon: 'shield-check'
+       icon: 'shield-check',
+       html: { class: 'icon icon-shield-check' }
 end
 
 module RedmineStronger
