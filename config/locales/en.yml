@@ -25,6 +25,13 @@ en:
   stronger_exposed_issues_summary: "%{total} issue(s) visible — %{open} open, %{closed} closed."
   stronger_top_exposed_projects: "Most exposed projects"
 
+  stronger_section_non_member_wikis: "Wikis readable without membership (%{count} of %{total} projects)"
+  stronger_no_non_member_wikis: "No project exposes its wiki outside its members."
+  stronger_section_non_member_documentations: "Documentation tabs readable without membership (%{count} of %{total} projects)"
+  stronger_no_non_member_documentations: "No project exposes its Documentation tab outside its members."
+  stronger_column_wiki_pages: "Pages"
+  stronger_column_wiki_attachments: "Attached files"
+
   stronger_section_inactive_users: "Accounts inactive for more than %{days} days (%{count} total)"
   stronger_no_inactive_users: "No active accounts inactive for more than %{days} days."
   stronger_never_logged_in: "Never logged in"

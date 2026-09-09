@@ -4,7 +4,8 @@ require "spec_helper"
 
 describe RedmineStronger::SecurityMetrics do
   fixtures :users, :roles, :projects, :members, :member_roles,
-           :issues, :issue_statuses, :trackers, :enabled_modules
+           :issues, :issue_statuses, :trackers, :enabled_modules,
+           :wikis, :wiki_pages, :attachments
 
   describe ".inactive_users" do
     it "returns active users who haven't logged in recently" do
@@ -109,6 +110,105 @@ describe RedmineStronger::SecurityMetrics do
       admin.update_column(:last_login_on, Time.now)
 
       expect(described_class.inactive_admins).not_to include(admin)
+    end
+  end
+
+  describe ".non_member_user" do
+    it "returns an active user with no membership and the builtin Non member role" do
+      user = described_class.non_member_user
+
+      expect(user).to be_active
+      expect(user.id).to eq(0)
+      expect(user.memberships).to be_empty
+      expect(user.builtin_role).to eq(Role.non_member)
+    end
+  end
+
+  describe ".exposed_wikis" do
+    def wiki_rows
+      described_class.exposed_wikis(described_class.non_member_user)[:wiki]
+    end
+
+    before do
+      expect(Role.non_member.has_permission?(:view_wiki_pages)).to be true
+    end
+
+    it "lists the public projects whose wiki a non-member can read" do
+      expect(wiki_rows.map {|row| row.project.id}).to include(1)
+    end
+
+    it "counts the pages and the attached files disclosed by an exposed wiki" do
+      row = wiki_rows.detect {|r| r.project.id == 1}
+
+      expect(row.pages).to eq(WikiPage.where(wiki_id: 1).count)
+      expect(row.attachments).to eq(Attachment.where(container_type: 'WikiPage', container_id: WikiPage.where(wiki_id: 1).ids).count)
+    end
+
+    it "excludes private projects" do
+      expect(wiki_rows.map {|row| row.project.id}).not_to include(2)
+    end
+
+    it "excludes projects whose wiki module is disabled" do
+      EnabledModule.where(project_id: 1, name: 'wiki').destroy_all
+
+      expect(wiki_rows.map {|row| row.project.id}).not_to include(1)
+    end
+
+    it "excludes projects once the Non member role loses the permission" do
+      Role.non_member.remove_permission!(:view_wiki_pages)
+
+      expect(described_class.exposed_wikis(described_class.non_member_user)[:wiki]).to be_empty
+    end
+
+    it "orders projects by the amount of content they disclose" do
+      pages = wiki_rows.map(&:pages)
+
+      expect(pages).to eq(pages.sort.reverse)
+    end
+
+    context "with the Documentation tab of redmine_second_wiki" do
+      before do
+        skip "redmine_second_wiki is not installed" unless described_class.documentation_supported?
+
+        EnabledModule.create!(project_id: 1, name: 'documentation')
+        Role.non_member.add_permission!(:view_documentation_pages)
+
+        wiki = Wiki.find(1)
+        root = WikiPage.create!(wiki: wiki, title: wiki.documentation_start_page.tr(' ', '_'))
+        WikiPage.create!(wiki: wiki, title: 'Doc_child', parent_id: root.id)
+      end
+
+      it "counts the documentation subtree apart from the wiki" do
+        result = described_class.exposed_wikis(described_class.non_member_user)
+        documentation = result[:documentation].detect {|row| row.project.id == 1}
+
+        expect(documentation.pages).to eq(2)
+      end
+
+      it "leaves a wiki start page nested under the documentation root on the wiki side" do
+        wiki = Wiki.find(1)
+        root = wiki.find_page(wiki.documentation_start_page)
+        wiki.find_page(wiki.start_page).update_column(:parent_id, root.id)
+
+        result = described_class.exposed_wikis(described_class.non_member_user)
+
+        expect(result[:documentation].detect {|row| row.project.id == 1}.pages).to eq(2)
+      end
+
+      it "splits the pages of a project between the two tabs without overlap" do
+        result = described_class.exposed_wikis(described_class.non_member_user)
+        wiki_pages = result[:wiki].detect {|row| row.project.id == 1}.pages
+        documentation_pages = result[:documentation].detect {|row| row.project.id == 1}.pages
+
+        expect(wiki_pages + documentation_pages).to eq(WikiPage.where(wiki_id: 1).count)
+      end
+    end
+  end
+
+  describe ".module_enabled_projects_count" do
+    it "counts the non-archived projects with the module enabled" do
+      expect(described_class.module_enabled_projects_count(:wiki)).
+        to eq(Project.where(status: [Project::STATUS_ACTIVE, Project::STATUS_CLOSED]).has_module(:wiki).count)
     end
   end
 end

@@ -16,7 +16,7 @@ Current features
   login, so legitimate users are rarely affected.
 
 * *Security dashboard* (Administration menu) : surfaces accounts using the API, anonymous/non-member
-  issue exposure, inactive accounts and locked accounts. Tracked login/API attempts.
+  issue and wiki exposure, inactive accounts and locked accounts. Tracked login/API attempts.
 
 * *Intranet-only API* : optionally rejects API-key requests that do not originate from the intranet zone.
   Disabled by default.
@@ -49,13 +49,13 @@ Test status
 
 | Plugin branch | Redmine Version | Test Status       |
 |---------------|-----------------|-------------------|
-| master        | 6.1.3           | [![6.1.3][2]][5]  |
-| master        | 7.0.0           | [![7.0.0][1]][5]  |
+| master        | 6.1.4           | [![6.1.4][2]][5]  |
+| master        | 7.0.1           | [![7.0.1][1]][5]  |
 | master        | master          | [![master][3]][5] |
 
-[1]: https://github.com/jbbarth/redmine_stronger/actions/workflows/7_0_0.yml/badge.svg
+[1]: https://github.com/jbbarth/redmine_stronger/actions/workflows/7_0_1.yml/badge.svg
 
-[2]: https://github.com/jbbarth/redmine_stronger/actions/workflows/6_1_3.yml/badge.svg
+[2]: https://github.com/jbbarth/redmine_stronger/actions/workflows/6_1_4.yml/badge.svg
 
 [3]: https://github.com/jbbarth/redmine_stronger/actions/workflows/master.yml/badge.svg
 

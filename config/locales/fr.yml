@@ -25,6 +25,13 @@ fr:
   stronger_exposed_issues_summary: "%{total} demande(s) visible(s) — %{open} ouverte(s), %{closed} fermée(s)."
   stronger_top_exposed_projects: "Principaux projets exposés"
 
+  stronger_section_non_member_wikis: "Wikis lisibles sans appartenance au projet (%{count} projets sur %{total})"
+  stronger_no_non_member_wikis: "Aucun projet ne donne accès à son wiki en dehors de ses membres."
+  stronger_section_non_member_documentations: "Onglets Documentation lisibles sans appartenance au projet (%{count} projets sur %{total})"
+  stronger_no_non_member_documentations: "Aucun projet ne donne accès à son onglet Documentation en dehors de ses membres."
+  stronger_column_wiki_pages: "Pages"
+  stronger_column_wiki_attachments: "Fichiers joints"
+
   stronger_section_inactive_users: "Comptes inactifs depuis plus de %{days} jours (%{count} au total)"
   stronger_no_inactive_users: "Aucun compte actif inactif depuis plus de %{days} jours."
   stronger_never_logged_in: "Jamais connecté"

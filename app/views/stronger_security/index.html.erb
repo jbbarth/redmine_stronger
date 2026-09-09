@@ -126,6 +126,24 @@
   <% end %>
 </div>
 
+<%# ── Wikis lisibles sans appartenance ────────────────────────────────── %>
+<%= render "redmine_stronger/exposed_wikis",
+           rows: @exposed_wikis,
+           index_path: :project_wiki_index_path,
+           title: l(:stronger_section_non_member_wikis,
+                    count: @exposed_wikis.size, total: @wiki_projects_count),
+           empty_message: l(:stronger_no_non_member_wikis) %>
+
+<%# ── Documentations lisibles sans appartenance (redmine_second_wiki) ─── %>
+<% if @documentation_supported %>
+  <%= render "redmine_stronger/exposed_wikis",
+             rows: @exposed_documentations,
+             index_path: :project_documentation_index_path,
+             title: l(:stronger_section_non_member_documentations,
+                      count: @exposed_documentations.size, total: @documentation_projects_count),
+             empty_message: l(:stronger_no_non_member_documentations) %>
+<% end %>
+
 <%# ── Comptes inactifs ─────────────────────────────────────────────────── %>
 <div class="box">
   <h3><%= l(:stronger_section_inactive_users,

@@ -1,0 +1,26 @@
+<div class="box">
+  <h3><%= title %></h3>
+
+  <% if rows.empty? %>
+    <p class="icon icon-ok"><%= sprite_icon('checked') %><%= empty_message %></p>
+  <% else %>
+    <table class="list">
+      <thead>
+        <tr>
+          <th><%= l(:field_project) %></th>
+          <th class="count"><%= l(:stronger_column_wiki_pages) %></th>
+          <th class="count"><%= l(:stronger_column_wiki_attachments) %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% rows.each do |row| %>
+          <tr>
+            <td><%= link_to row.project.name, settings_project_path(row.project) %></td>
+            <td class="count"><strong><%= row.pages > 0 ? link_to(row.pages, public_send(index_path, row.project)) : row.pages %></strong></td>
+            <td class="count"><%= row.attachments %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</div>
