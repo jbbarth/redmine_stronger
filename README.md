@@ -21,6 +21,26 @@ Current features
 * *Intranet-only API* : optionally rejects API-key requests that do not originate from the intranet zone.
   Disabled by default.
 
+* *Attachment malware scan* : optionally scans every uploaded file with ClamAV (web forms, API uploads, incoming
+  emails) before it is stored, and rejects infected files. If clamd is unavailable, the file is accepted and a
+  background job scans it later, notifying administrators if it turns out to be infected. Disabled by default.
+
+  Requires a clamd daemon reachable through a local unix socket (`apt install clamav-daemon` on Debian, socket
+  `/var/run/clamav/clamd.ctl`) and an ActiveJob backend for the deferred scans. The setting cannot be turned on
+  while clamd does not answer on the configured socket. clamd's `StreamMaxLength`, `MaxFileSize` and `MaxScanSize`
+  must be at least Redmine's maximum attachment size, otherwise larger files are accepted unscanned.
+
+  The files already stored are scanned by a separate read-only task, which writes a CSV report of the infected,
+  unscannable and missing files, and exits with status 2 when a threat is found:
+
+      rake redmine:stronger:scan_attachments RAILS_ENV=production
+
+  `THREADS` sets the number of parallel scans (4), `SINCE` limits the scan to the attachments created in the last
+  N days, `CLAMD_SOCKET` and `REPORT` override the socket and the report path. `NOTIFY=1` emails the
+  administrators a single summary per run, whatever the number of infected files; without it the task only writes
+  its report. Run it once over the whole stock, then nightly from cron, since a file that is clean today can be
+  recognised after a signature update.
+
 Install
 -------
 

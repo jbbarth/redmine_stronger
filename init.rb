@@ -12,7 +12,9 @@ Redmine::Plugin.register :redmine_stronger do
   settings default: {
     'provenance_header' => 'X-Provenance',
     'provenance_intranet_value' => 'intranet',
-    'block_internet_api' => ''
+    'block_internet_api' => '',
+    'malware_scan' => '',
+    'clamd_socket' => '/var/run/clamav/clamd.ctl'
   }, partial: 'settings/redmine_stronger'
 
   menu :admin_menu, :stronger_security,
@@ -35,6 +37,10 @@ module RedmineStronger
       require_relative "lib/redmine_stronger/token_patch"
       require_relative "lib/redmine_stronger/user_patch"
       require_relative "lib/redmine_stronger/security_metrics"
+      require_relative "lib/redmine_stronger/malware_scanner"
+      require_relative "lib/redmine_stronger/attachment_patch"
+      require_relative "lib/redmine_stronger/attachment_stock_scan"
+      require_relative "lib/redmine_stronger/settings_controller_patch"
     end
   end
 end

@@ -1,4 +1,6 @@
-<div class="box tabular settings">
+<fieldset class="box tabular settings">
+  <legend><%= l(:stronger_legend_api_access) %></legend>
+
   <p>
     <label><%= l(:stronger_setting_provenance_header) %></label>
     <%= text_field_tag 'settings[provenance_header]',
@@ -21,5 +23,27 @@
     <%= check_box_tag 'settings[block_internet_api]', '1', @settings['block_internet_api'] == '1' %>
     <em class="info"><%= l(:stronger_setting_block_internet_api_info) %></em>
   </p>
+</fieldset>
 
-</div>
+<fieldset class="box tabular settings">
+  <legend><%= l(:stronger_legend_attachment_scan) %></legend>
+
+  <p>
+    <label><%= l(:stronger_setting_malware_scan) %></label>
+    <%= hidden_field_tag 'settings[malware_scan]', '' %>
+    <%= check_box_tag 'settings[malware_scan]', '1', @settings['malware_scan'] == '1' %>
+    <em class="info"><%= l(:stronger_setting_malware_scan_info) %></em>
+  </p>
+
+  <p>
+    <label><%= l(:stronger_setting_clamd_socket) %></label>
+    <%= text_field_tag 'settings[clamd_socket]',
+          @settings['clamd_socket'],
+          size: 40 %>
+    <% if RedmineStronger::MalwareScanner.available? %>
+      <em class="info"><%= l(:stronger_clamd_reachable) %></em>
+    <% else %>
+      <em class="info error"><%= l(:stronger_clamd_unreachable) %></em>
+    <% end %>
+  </p>
+</fieldset>
