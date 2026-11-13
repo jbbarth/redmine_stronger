@@ -57,4 +57,19 @@ class StrongerSecurityController < ApplicationController
     @api_user_provenances = metrics.api_user_provenances(@api_users.map(&:user_id))
     @api_user_outcomes    = metrics.api_user_outcomes(@api_users.map(&:user_id))
   end
+
+  def dependencies
+    @report = StrongerDependencyReport.latest
+    @running = StrongerDependencyReport.running
+    failed = StrongerDependencyReport.failed_request
+    @failed_request = failed if failed && (@report.nil? || failed.requested_at > @report.collected_at)
+  end
+
+  def collect_dependencies
+    unless StrongerDependencyReport.running
+      StrongerDependencyAuditJob.perform_later(StrongerDependencyReport.request!.id)
+      flash[:notice] = l(:stronger_dependencies_collect_requested)
+    end
+    redirect_to stronger_security_dependencies_path
+  end
 end

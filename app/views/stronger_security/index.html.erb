@@ -4,6 +4,8 @@
 
 <h2><%= l(:label_stronger_security_dashboard) %></h2>
 
+<%= stronger_security_tabs('overview') %>
+
 <%# ── Comptes utilisant l'API ──────────────────────────────────────────────── %>
 <div class="box">
   <h3><%= l(:stronger_section_api_users, count: @api_users_count) %></h3>

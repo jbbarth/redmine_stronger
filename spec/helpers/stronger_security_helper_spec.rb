@@ -27,4 +27,21 @@ describe StrongerSecurityHelper, type: :helper do
       expect(helper.stronger_admin_badge(nil)).to be_nil
     end
   end
+
+  describe "#stronger_item_status" do
+    it "does not flag the latest release of a branch that only gets security fixes" do
+      rails = { "kind" => "rails", "version" => "8.1.4.1", "branch_latest" => "8.1.4.1", "latest" => "8.1.4.1",
+                "security_only" => true }
+      expect(helper.stronger_item_status(rails)).to eq "ok"
+    end
+
+    it "flags a newer release in the branch" do
+      expect(helper.stronger_item_status("version" => "17.11", "branch_latest" => "17.12")).to eq "outdated"
+    end
+
+    it "flags a high vulnerability before anything else" do
+      item = { "version" => "3.2.6", "branch_latest" => "3.2.8", "advisories" => [{ "severity" => "high" }] }
+      expect(helper.stronger_item_status(item)).to eq "alert"
+    end
+  end
 end

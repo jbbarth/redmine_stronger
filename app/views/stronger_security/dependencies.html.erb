@@ -1,0 +1,248 @@
+<% content_for :header_tags do %>
+  <%= stylesheet_link_tag 'stronger', plugin: 'redmine_stronger' %>
+  <% if @running %><meta http-equiv="refresh" content="20"><% end %>
+<% end %>
+
+<div class="contextual">
+  <% unless @running %>
+    <%= button_to l(:stronger_dependencies_collect), stronger_security_collect_dependencies_path, form_class: 'stronger-collect' %>
+  <% end %>
+</div>
+
+<h2><%= l(:label_stronger_security_dashboard) %></h2>
+
+<%= stronger_security_tabs('dependencies') %>
+
+<% if @running %>
+  <p class="warning"><%= l(:stronger_dependencies_running, time: format_time(@running.requested_at)) %></p>
+<% elsif @failed_request %>
+  <div class="flash error">
+    <% if @failed_request.failed? %>
+      <%= l(:stronger_dependencies_request_failed, time: format_time(@failed_request.requested_at)) %>
+      <pre><%= @failed_request.error %></pre>
+    <% else %>
+      <%= l(:stronger_dependencies_request_abandoned, time: format_time(@failed_request.requested_at)) %>
+    <% end %>
+  </div>
+<% end %>
+
+<% if @report.nil? %>
+  <div class="box">
+    <p class="warning"><%= l(:stronger_dependencies_never_collected) %></p>
+    <pre>bundle exec rake redmine:stronger:audit_dependencies RAILS_ENV=<%= Rails.env %></pre>
+  </div>
+<% else %>
+  <%# Collection status %>
+  <div class="box">
+    <p class="<%= @report.stale? ? 'warning' : '' %>">
+      <%= l(:stronger_dependencies_collected_at, time: format_time(@report.collected_at)) %>
+      <% if @report.stale? %>
+        <%= l(:stronger_dependencies_stale, days: StrongerDependencyReport::STALE_AFTER.in_days.to_i) %>
+      <% end %>
+    </p>
+    <% if @report.payload['sources'].blank? %>
+      <p class="warning"><%= l(:stronger_dependencies_offline) %></p>
+    <% end %>
+    <% if @report.source_errors.any? %>
+      <p class="warning"><%= l(:stronger_dependencies_source_errors) %></p>
+      <ul>
+        <% @report.source_errors.each do |error| %>
+          <li><strong><%= error['source'] %></strong> : <%= error['message'] %></li>
+        <% end %>
+      </ul>
+    <% end %>
+
+    <% counts = stronger_severity_counts(@report) %>
+    <% if counts.empty? && stronger_dependencies_complete?(@report) %>
+      <p class="icon icon-ok"><%= sprite_icon('checked') %><%= l(:stronger_dependencies_no_advisory) %></p>
+    <% elsif counts.empty? %>
+      <p class="warning"><%= l(:stronger_dependencies_no_advisory_incomplete) %></p>
+    <% else %>
+      <p>
+        <%= l(:stronger_dependencies_advisories_summary) %>
+        <% RedmineStronger::DependencyAudit::Severity::LEVELS.each do |level| %>
+          <% next unless counts[level] > 0 %>
+          <%= stronger_severity_badge(level) %> <%= counts[level] %>
+        <% end %>
+      </p>
+    <% end %>
+    <% stronger_unsupported_components(@report).each do |item| %>
+      <p class="warning"><%= l(:stronger_component_eol, name: item['name'], version: item['version']) %></p>
+    <% end %>
+
+    <div class="stronger-tiles">
+      <% stronger_category_summaries(@report).each do |summary| %>
+        <a class="stronger-tile stronger-tile-<%= summary[:status] %>" href="#stronger-<%= summary[:category] %>">
+          <span class="stronger-tile-title"><%= l("stronger_category_#{summary[:category]}") %></span>
+          <span class="stronger-tile-count"><%= summary[:total] %></span>
+          <span class="stronger-tile-detail">
+            <% if summary[:vulnerable] > 0 %><%= l(:stronger_tile_vulnerable, count: summary[:vulnerable]) %><br><% end %>
+            <% if summary[:outdated] > 0 %><%= l(:stronger_tile_outdated, count: summary[:outdated]) %><br><% end %>
+            <% if summary[:unknown] > 0 %><%= l(:stronger_tile_unknown, count: summary[:unknown]) %><% end %>
+            <% if summary[:status] == 'ok' %><%= l(:stronger_tile_ok) %><% end %>
+          </span>
+        </a>
+      <% end %>
+    </div>
+  </div>
+
+  <%# Environment %>
+  <div class="box" id="stronger-environment">
+    <h3><%= l(:stronger_section_environment) %></h3>
+    <table class="list stronger-dependencies">
+      <thead>
+        <tr>
+          <th><%= l(:stronger_column_component) %></th>
+          <th><%= l(:field_version) %></th>
+          <th><%= l(:stronger_column_branch_latest) %></th>
+          <th><%= l(:stronger_column_latest) %></th>
+          <th><%= l(:stronger_column_support) %></th>
+          <th><%= l(:stronger_column_advisories) %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @report.items('environment').each do |item| %>
+          <tr class="stronger-row stronger-row-<%= stronger_item_status(item) %>">
+            <td><strong><%= item['name'] %></strong></td>
+            <td><%= stronger_version_tag(item) %></td>
+            <td><%= stronger_newer_version(item, 'branch_latest') %></td>
+            <td><%= stronger_newer_version(item, 'latest') %></td>
+            <td><%= stronger_support_badge(item) %></td>
+            <td>
+              <% if item['coverage'] == 'gems' %>
+                <span class="stronger-muted"><%= l(:stronger_coverage_gems) %></span>
+              <% else %>
+                <%= render 'stronger_security/advisories', advisories: item['advisories'] %>
+                <% if item['coverage'] == 'partial' %>
+                  <div class="stronger-muted"><%= l(:stronger_coverage_partial) %></div>
+                <% end %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <%# Gems %>
+  <% gems = stronger_sorted_items(@report.items('gems')) %>
+  <% attention, up_to_date = gems.partition { |g| %w(alert vulnerable outdated).include?(stronger_item_status(g)) } %>
+  <div class="box" id="stronger-gems">
+    <h3><%= l(:stronger_section_gems, count: gems.size, vulnerable: gems.count { |g| g['advisories'].present? }) %></h3>
+    <%= render 'stronger_security/gems_table', rows: attention if attention.any? %>
+    <% if up_to_date.any? %>
+      <details class="stronger-collapsed">
+        <summary><%= l(:stronger_gems_show_up_to_date, count: up_to_date.size) %></summary>
+        <%= render 'stronger_security/gems_table', rows: up_to_date %>
+      </details>
+    <% end %>
+  </div>
+
+  <%# JavaScript %>
+  <% javascripts = @report.items('javascripts') %>
+  <div class="box" id="stronger-javascripts">
+    <h3><%= l(:stronger_section_javascripts, count: javascripts.size) %></h3>
+    <table class="list stronger-dependencies">
+      <thead>
+        <tr>
+          <th><%= l(:stronger_column_library) %></th>
+          <th><%= l(:field_version) %></th>
+          <th><%= l(:stronger_column_latest) %></th>
+          <th><%= l(:stronger_column_file) %></th>
+          <th><%= l(:stronger_column_advisories) %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% stronger_sorted_items(javascripts).each do |item| %>
+          <tr class="stronger-row stronger-row-<%= stronger_item_status(item) %>">
+            <td><strong><%= item['name'] %></strong></td>
+            <td><%= stronger_version_tag(item) %></td>
+            <td><%= stronger_newer_version(item, 'latest') %></td>
+            <td class="stronger-muted"><%= item['path'] %></td>
+            <td><%= render 'stronger_security/advisories', advisories: item['advisories'] %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <%# Plugins %>
+  <% plugins = @report.items('plugins') %>
+  <div class="box" id="stronger-plugins">
+    <h3><%= l(:stronger_section_plugins, count: plugins.size, behind: plugins.count { |p| p['up_to_date'] == false }) %></h3>
+    <table class="list stronger-dependencies">
+      <thead>
+        <tr>
+          <th><%= l(:label_plugins) %></th>
+          <th><%= l(:field_version) %></th>
+          <th><%= l(:stronger_column_commit) %></th>
+          <th><%= l(:stronger_column_upstream) %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% plugins.sort_by { |p| [p['up_to_date'] == false ? 0 : 1, p['name']] }.each do |item| %>
+          <tr class="stronger-row stronger-row-<%= stronger_item_status(item) %>">
+            <td><strong><%= item['name'] %></strong><div class="stronger-muted"><%= item['label'] %></div></td>
+            <td><%= stronger_version_tag(item) %></td>
+            <td>
+              <% if item['commit'] %>
+                <code><%= stronger_short_commit(item['commit']) %></code>
+                <span class="stronger-muted"><%= item['branch'] %> <%= format_date(item['commit_date'].to_date) if item['commit_date'] %></span>
+              <% else %>
+                <span class="stronger-muted"><%= l(:stronger_plugin_not_git) %></span>
+              <% end %>
+            </td>
+            <td>
+              <% if item['up_to_date'] %>
+                <span class="stronger-support stronger-support-supported"><%= l(:stronger_plugin_up_to_date) %></span>
+              <% elsif item['up_to_date'] == false %>
+                <span class="stronger-support stronger-support-security_only"><%= l(:stronger_plugin_differs) %></span>
+                <code><%= stronger_short_commit(item['remote_commit']) %></code>
+              <% elsif item['remote_error'] %>
+                <span class="stronger-muted" title="<%= item['remote_error'] %>"><%= l(:stronger_plugin_remote_error) %></span>
+              <% elsif item['remote'].blank? && item['commit'] %>
+                <span class="stronger-muted"><%= l(:stronger_plugin_no_public_remote) %></span>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <%# System packages %>
+  <% packages = @report.items('packages') %>
+  <% if packages.any? %>
+    <div class="box" id="stronger-packages">
+      <h3><%= l(:stronger_section_packages, count: packages.size, total: @report.payload['packages_total']) %></h3>
+      <% case @report.payload['package_tracking'] %>
+      <% when 'untracked' %>
+        <p class="warning"><%= l(:stronger_packages_untracked) %></p>
+      <% when 'unsupported' %>
+        <p class="stronger-muted"><%= l(:stronger_packages_unsupported) %></p>
+      <% end %>
+      <table class="list stronger-dependencies">
+        <thead>
+          <tr>
+            <th><%= l(:stronger_column_source_package) %></th>
+            <th><%= l(:field_version) %></th>
+            <th><%= l(:stronger_column_apt_candidate) %></th>
+            <th><%= l(:stronger_column_advisories) %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% stronger_sorted_items(packages).each do |item| %>
+            <tr class="stronger-row stronger-row-<%= stronger_item_status(item) %>">
+              <td><strong><%= item['name'] %></strong><div class="stronger-muted"><%= Array(item['binaries']).join(', ') %></div></td>
+              <td><%= stronger_version_tag(item) %></td>
+              <td><%= content_tag(:span, item['candidate'], class: 'stronger-newer') if item['candidate'] %></td>
+              <td><%= render 'stronger_security/advisories', advisories: item['advisories'] %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+<% end %>
+
+<% html_title l(:stronger_tab_dependencies), l(:label_stronger_security_dashboard) %>

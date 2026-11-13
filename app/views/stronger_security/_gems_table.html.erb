@@ -1,0 +1,25 @@
+<table class="list stronger-dependencies">
+  <thead>
+    <tr>
+      <th><%= l(:stronger_column_gem) %></th>
+      <th><%= l(:field_version) %></th>
+      <th><%= l(:stronger_column_branch_latest) %></th>
+      <th><%= l(:stronger_column_latest) %></th>
+      <th><%= l(:stronger_column_advisories) %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% rows.each do |item| %>
+      <tr class="stronger-row stronger-row-<%= stronger_item_status(item) %>">
+        <td>
+          <strong><%= item['name'] %></strong>
+          <% unless item['direct'] %><span class="stronger-muted"><%= l(:stronger_gem_transitive) %></span><% end %>
+        </td>
+        <td><%= stronger_version_tag(item) %></td>
+        <td><%= stronger_newer_version(item, 'branch_latest') %></td>
+        <td><%= stronger_newer_version(item, 'latest') %></td>
+        <td><%= render 'stronger_security/advisories', advisories: item['advisories'] %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

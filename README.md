@@ -18,6 +18,11 @@ Current features
 * *Security dashboard* (Administration menu) : surfaces accounts using the API, anonymous/non-member
   issue and wiki exposure, inactive accounts and locked accounts. Tracked login/API attempts.
 
+* *Dependency audit* (Dependencies tab of the security dashboard) : versions, latest releases, end of support and
+  known vulnerabilities of the OS packages, Ruby, Rails, Redmine, database, gems, bundled JavaScript libraries and
+  plugins. Collected by `rake redmine:stronger:audit_dependencies` (proxy from `https_proxy`, `OFFLINE=1` for the
+  local inventory only, exit status 2 on a critical or high vulnerability), to schedule daily.
+
 * *Intranet-only API* : optionally rejects API-key requests that do not originate from the intranet zone.
   Disabled by default.
 

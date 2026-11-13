@@ -1,0 +1,34 @@
+<%# advisories is nil when no vulnerability source could check the item %>
+<% severity = RedmineStronger::DependencyAudit::Severity %>
+<% if advisories.nil? %>
+  <span class="stronger-muted"><%= l(:stronger_not_checked) %></span>
+<% elsif advisories.empty? %>
+  <span class="stronger-muted"><%= l(:stronger_no_known_advisory) %></span>
+<% else %>
+  <% advisories = advisories.sort_by { |a| severity.rank(a['severity']) } %>
+  <details class="stronger-advisories">
+    <summary>
+      <%= stronger_severity_badge(severity.worst(advisories)) %>
+      <%= l(:stronger_advisories_count, count: advisories.size) %>
+      <% if advisories.all? { |a| a['fix_available'] == false } %>
+        <span class="stronger-muted"><%= l(:stronger_no_fix_available) %></span>
+      <% end %>
+    </summary>
+    <ul>
+      <% advisories.each do |advisory| %>
+        <li>
+          <%= stronger_severity_badge(advisory['severity']) %>
+          <%= stronger_advisory_link(advisory) %>
+          <% if advisory['fixed'].present? %>
+            <span class="stronger-fixed"><%= l(:stronger_fixed_in, versions: advisory['fixed'].join(', ')) %></span>
+          <% elsif advisory['fix_available'] == false %>
+            <span class="stronger-muted"><%= l(:stronger_no_fix_available) %></span>
+          <% end %>
+          <% if advisory['title'].present? %>
+            <div class="stronger-advisory-title"><%= advisory['title'] %></div>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </details>
+<% end %>

@@ -84,3 +84,105 @@
 /* API settings tab hint */
 .stronger-api-hint { margin-top: 1em; }
 .stronger-api-hint a { margin-left: 0.25em; }
+
+/* Dependency audit */
+.stronger-muted { color: #868e96; font-size: 0.9em; }
+.stronger-newer { font-weight: bold; color: #e8590c; }
+.stronger-fixed { color: #2b8a3e; font-size: 0.9em; }
+
+.stronger-severity,
+.stronger-support {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: bold;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.stronger-severity-critical   { background-color: #862e9c; }
+.stronger-severity-high       { background-color: #dc3545; }
+.stronger-severity-medium     { background-color: #fd7e14; }
+.stronger-severity-low        { background-color: #6c757d; }
+.stronger-severity-negligible,
+.stronger-severity-unknown    { background-color: transparent; color: #868e96; border: 1px solid #ced4da; }
+
+.stronger-support-supported     { background-color: #198754; }
+.stronger-support-security_only { background-color: #fd7e14; }
+.stronger-support-eol           { background-color: #dc3545; }
+.stronger-support-unknown       { background-color: transparent; color: #868e96; border: 1px solid #ced4da; }
+
+table.stronger-dependencies td { text-align: start; vertical-align: top; }
+.stronger-advisories summary { cursor: pointer; }
+.stronger-advisories ul { margin: 0.4em 0 0; padding-inline-start: 1.2em; }
+.stronger-advisories li { margin-bottom: 0.3em; }
+.stronger-advisory-title { color: #495057; font-size: 0.9em; }
+.stronger-collapsed > summary { cursor: pointer; margin: 0.5em 0; }
+
+/* Dependency audit: colour by status (alert, vulnerable, outdated, ok, unknown) */
+.stronger-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 1em;
+}
+
+.stronger-tile {
+  flex: 1 1 140px;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border-inline-start: 5px solid #adb5bd;
+  background-color: rgba(134, 142, 150, 0.08);
+  color: inherit;
+  text-decoration: none;
+}
+.stronger-tile:hover { text-decoration: none; filter: brightness(0.97); }
+.stronger-tile-title { font-weight: bold; }
+.stronger-tile-count { font-size: 1.8em; font-weight: bold; line-height: 1.2; }
+.stronger-tile-detail { font-size: 0.9em; }
+
+.stronger-tile-alert      { border-inline-start-color: #dc3545; background-color: rgba(220, 53, 69, 0.1); }
+.stronger-tile-vulnerable { border-inline-start-color: #fd7e14; background-color: rgba(253, 126, 20, 0.1); }
+.stronger-tile-outdated   { border-inline-start-color: #fab005; background-color: rgba(250, 176, 5, 0.1); }
+.stronger-tile-ok         { border-inline-start-color: #198754; background-color: rgba(25, 135, 84, 0.1); }
+.stronger-tile-alert .stronger-tile-count      { color: #dc3545; }
+.stronger-tile-vulnerable .stronger-tile-count { color: #e8590c; }
+.stronger-tile-ok .stronger-tile-count         { color: #198754; }
+
+table.stronger-dependencies tr.stronger-row > td:first-child { border-inline-start: 4px solid transparent; }
+table.stronger-dependencies tr.stronger-row-alert > td:first-child      { border-inline-start-color: #dc3545; }
+table.stronger-dependencies tr.stronger-row-vulnerable > td:first-child { border-inline-start-color: #fd7e14; }
+table.stronger-dependencies tr.stronger-row-outdated > td:first-child   { border-inline-start-color: #fab005; }
+table.stronger-dependencies tr.stronger-row-ok > td:first-child         { border-inline-start-color: #198754; }
+table.stronger-dependencies tr.stronger-row-unknown > td:first-child    { border-inline-start-color: #ced4da; }
+table.stronger-dependencies tr.stronger-row-alert      { background-color: rgba(220, 53, 69, 0.07); }
+table.stronger-dependencies tr.stronger-row-vulnerable { background-color: rgba(253, 126, 20, 0.07); }
+
+.stronger-version {
+  display: inline-block;
+  padding: 0 6px;
+  border-radius: 3px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+.stronger-version-alert      { color: #fff; background-color: #dc3545; }
+.stronger-version-vulnerable { color: #fff; background-color: #fd7e14; }
+.stronger-version-outdated   { color: #7a4f01; background-color: rgba(250, 176, 5, 0.25); }
+.stronger-version-ok         { color: #146c43; background-color: rgba(25, 135, 84, 0.12); }
+.stronger-version-unknown    { color: inherit; font-weight: normal; }
+
+.stronger-collect { display: inline; }
+.stronger-collect button,
+.stronger-collect input[type=submit] {
+  color: #fff;
+  background: #198754;
+  border: 1px solid #146c43;
+  border-radius: 3px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+.stronger-collect button:hover,
+.stronger-collect input[type=submit]:hover { background: #146c43; }

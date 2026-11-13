@@ -115,4 +115,102 @@ describe StrongerSecurityController do
       end
     end
   end
+
+  describe "GET #dependencies" do
+    render_views
+
+    let(:payload) do
+      {
+        "sources" => %w(advisories),
+        "environment" => [{ "kind" => "redmine", "name" => "Redmine", "version" => "7.0.1", "cycle" => "7.0",
+                            "branch_latest" => "7.0.3", "eol" => false,
+                            "advisories" => [{ "id" => "CVE-2026-0001", "severity" => "high", "fix_available" => true,
+                                               "fixed" => [">= 7.0.2"], "url" => "https://nvd.example/CVE-2026-0001" }] }],
+        "gems" => [{ "name" => "rack", "version" => "3.2.6", "direct" => false, "branch_latest" => "3.2.7", "advisories" => [] },
+                   { "name" => "rails", "version" => "8.1.4.1", "direct" => true, "branch_latest" => "8.1.4.1", "advisories" => [] }],
+        "packages" => [], "packages_total" => 0, "package_tracking" => "untracked",
+        "javascripts" => [], "plugins" => [{ "name" => "redmine_stronger", "commit" => "a" * 40, "up_to_date" => false,
+                                             "remote_commit" => "b" * 40 }],
+        "errors" => [{ "source" => "nvd", "message" => "HTTP 503" }]
+      }
+    end
+
+    it "redirects non-admin users to login" do
+      get :dependencies
+      expect(response.location).to include(signin_path)
+    end
+
+    context "as an admin user" do
+      before { @request.session[:user_id] = User.find_by_login("admin").id }
+
+      it "explains how to collect when no audit was recorded" do
+        get :dependencies
+        expect(response).to be_successful
+        expect(response.body).to include("redmine:stronger:audit_dependencies")
+      end
+
+      it "renders the latest audit with its advisories and source errors" do
+        StrongerDependencyReport.record!(payload)
+        get :dependencies
+        expect(response).to be_successful
+        expect(response.body).to include("CVE-2026-0001", "HTTP 503", "rack", "3.2.7")
+      end
+
+      it "does not present an incomplete audit as free of vulnerabilities" do
+        payload["environment"].first["advisories"] = []
+        payload["gems"].each { |gem| gem.delete("advisories") }
+        StrongerDependencyReport.record!(payload)
+        get :dependencies
+        expect(response.body).to include(I18n.t(:stronger_dependencies_no_advisory_incomplete), I18n.t(:stronger_not_checked))
+        expect(response.body).not_to include(I18n.t(:stronger_dependencies_no_advisory))
+      end
+
+      it "does not link advisories to non http urls" do
+        payload["environment"].first["advisories"].first["url"] = "javascript:alert(1)"
+        StrongerDependencyReport.record!(payload)
+        get :dependencies
+        expect(response.body).not_to include("javascript:alert")
+      end
+
+      it "shows a collection in progress" do
+        StrongerDependencyReport.request!
+        get :dependencies
+        expect(response.body).to include(I18n.t(:stronger_dependencies_running, time: "")[0, 20])
+        expect(response.body).not_to include(I18n.t(:stronger_dependencies_collect))
+      end
+
+      it "shows why the last requested collection failed" do
+        StrongerDependencyReport.record!(payload)
+        StrongerDependencyReport.request!.fail!("rake aborted!")
+        get :dependencies
+        expect(response.body).to include("rake aborted!")
+      end
+    end
+  end
+
+  describe "POST #collect_dependencies" do
+    it "is reserved to administrators" do
+      expect(StrongerDependencyAuditJob).not_to receive(:perform_later)
+      post :collect_dependencies
+      expect(StrongerDependencyReport.count).to eq 0
+    end
+
+    context "as an admin user" do
+      before { @request.session[:user_id] = User.find_by_login("admin").id }
+
+      it "requests a collection in the background" do
+        expect(StrongerDependencyAuditJob).to receive(:perform_later).with(kind_of(Integer))
+        post :collect_dependencies
+        expect(response).to redirect_to(stronger_security_dependencies_path)
+        expect(StrongerDependencyReport.running).to be_present
+      end
+
+      it "does not start a second collection while one is running" do
+        StrongerDependencyReport.request!
+        expect(StrongerDependencyAuditJob).not_to receive(:perform_later)
+        post :collect_dependencies
+        expect(StrongerDependencyReport.count).to eq 1
+      end
+    end
+  end
 end
