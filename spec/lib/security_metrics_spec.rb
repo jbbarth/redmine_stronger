@@ -57,6 +57,25 @@ describe RedmineStronger::SecurityMetrics do
     it "is an unlimited scope the controller paginates" do
       expect(described_class.api_users_scope.limit_value).to be_nil
     end
+
+    it "ignores API tokens not used in the last days" do
+      stale = Token.create!(user: User.find(2), action: 'api', value: 'd' * 40,
+                            last_used_at: (described_class::API_RECENT_DAYS + 1).days.ago)
+      expect(described_class.api_users_scope).not_to include(stale)
+    end
+  end
+
+  describe ".api_blocked_attempts" do
+    it "counts the recent blocked API attempts per user" do
+      blocked = { auth_method: 'api_key', outcome: UserLoginSession::OUTCOME_BLOCKED }
+      UserLoginSession.create!(blocked.merge(user: User.find(2), logged_in_at: 1.day.ago))
+      UserLoginSession.create!(blocked.merge(user: User.find(2), logged_in_at: 2.days.ago))
+      UserLoginSession.create!(blocked.merge(user: User.find(3), logged_in_at: 40.days.ago))
+      UserLoginSession.create!(user: User.find(3), logged_in_at: 1.day.ago, auth_method: 'api_key',
+                               outcome: UserLoginSession::OUTCOME_SUCCESS)
+
+      expect(described_class.api_blocked_attempts).to eq(2 => 2)
+    end
   end
 
   describe ".api_user_provenances" do

@@ -70,26 +70,13 @@
       <p class="warning"><%= l(:stronger_component_eol, name: item['name'], version: item['version']) %></p>
     <% end %>
 
-    <div class="stronger-tiles">
-      <% stronger_category_summaries(@report).each do |summary| %>
-        <a class="stronger-tile stronger-tile-<%= summary[:status] %>" href="#stronger-<%= summary[:category] %>">
-          <span class="stronger-tile-title"><%= l("stronger_category_#{summary[:category]}") %></span>
-          <span class="stronger-tile-count"><%= summary[:total] %></span>
-          <span class="stronger-tile-detail">
-            <% if summary[:vulnerable] > 0 %><%= l(:stronger_tile_vulnerable, count: summary[:vulnerable]) %><br><% end %>
-            <% if summary[:outdated] > 0 %><%= l(:stronger_tile_outdated, count: summary[:outdated]) %><br><% end %>
-            <% if summary[:unknown] > 0 %><%= l(:stronger_tile_unknown, count: summary[:unknown]) %><% end %>
-            <% if summary[:status] == 'ok' %><%= l(:stronger_tile_ok) %><% end %>
-          </span>
-        </a>
-      <% end %>
-    </div>
+    <%= render 'stronger_security/tiles', tiles: stronger_dependency_tiles(@report) %>
   </div>
 
   <%# Environment %>
   <div class="box" id="stronger-environment">
     <h3><%= l(:stronger_section_environment) %></h3>
-    <table class="list stronger-dependencies">
+    <table class="list stronger-table">
       <thead>
         <tr>
           <th><%= l(:stronger_column_component) %></th>
@@ -98,6 +85,7 @@
           <th><%= l(:stronger_column_latest) %></th>
           <th><%= l(:stronger_column_support) %></th>
           <th><%= l(:stronger_column_advisories) %></th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -118,6 +106,7 @@
                 <% end %>
               <% end %>
             </td>
+            <td class="buttons"><%= stronger_new_issue_link(item, @report) %></td>
           </tr>
         <% end %>
       </tbody>
@@ -142,7 +131,7 @@
   <% javascripts = @report.items('javascripts') %>
   <div class="box" id="stronger-javascripts">
     <h3><%= l(:stronger_section_javascripts, count: javascripts.size) %></h3>
-    <table class="list stronger-dependencies">
+    <table class="list stronger-table">
       <thead>
         <tr>
           <th><%= l(:stronger_column_library) %></th>
@@ -150,6 +139,7 @@
           <th><%= l(:stronger_column_latest) %></th>
           <th><%= l(:stronger_column_file) %></th>
           <th><%= l(:stronger_column_advisories) %></th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -160,6 +150,7 @@
             <td><%= stronger_newer_version(item, 'latest') %></td>
             <td class="stronger-muted"><%= item['path'] %></td>
             <td><%= render 'stronger_security/advisories', advisories: item['advisories'] %></td>
+            <td class="buttons"><%= stronger_new_issue_link(item, @report) %></td>
           </tr>
         <% end %>
       </tbody>
@@ -170,13 +161,14 @@
   <% plugins = @report.items('plugins') %>
   <div class="box" id="stronger-plugins">
     <h3><%= l(:stronger_section_plugins, count: plugins.size, behind: plugins.count { |p| p['up_to_date'] == false }) %></h3>
-    <table class="list stronger-dependencies">
+    <table class="list stronger-table">
       <thead>
         <tr>
           <th><%= l(:label_plugins) %></th>
           <th><%= l(:field_version) %></th>
           <th><%= l(:stronger_column_commit) %></th>
           <th><%= l(:stronger_column_upstream) %></th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -204,6 +196,7 @@
                 <span class="stronger-muted"><%= l(:stronger_plugin_no_public_remote) %></span>
               <% end %>
             </td>
+            <td class="buttons"><%= stronger_new_issue_link(item, @report) %></td>
           </tr>
         <% end %>
       </tbody>
@@ -221,13 +214,14 @@
       <% when 'unsupported' %>
         <p class="stronger-muted"><%= l(:stronger_packages_unsupported) %></p>
       <% end %>
-      <table class="list stronger-dependencies">
+      <table class="list stronger-table">
         <thead>
           <tr>
             <th><%= l(:stronger_column_source_package) %></th>
             <th><%= l(:field_version) %></th>
             <th><%= l(:stronger_column_apt_candidate) %></th>
             <th><%= l(:stronger_column_advisories) %></th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -237,6 +231,7 @@
               <td><%= stronger_version_tag(item) %></td>
               <td><%= content_tag(:span, item['candidate'], class: 'stronger-newer') if item['candidate'] %></td>
               <td><%= render 'stronger_security/advisories', advisories: item['advisories'] %></td>
+              <td class="buttons"><%= stronger_new_issue_link(item, @report) %></td>
             </tr>
           <% end %>
         </tbody>

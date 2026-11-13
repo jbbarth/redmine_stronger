@@ -1,0 +1,18 @@
+<table class="list stronger-table">
+  <thead>
+    <tr>
+      <th><%= l(:field_project) %></th>
+      <th class="count"><%= l(:stronger_column_wiki_pages) %></th>
+      <th class="count"><%= l(:stronger_column_wiki_attachments) %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% rows.each do |row| %>
+      <tr class="stronger-row stronger-row-<%= row.pages > 0 ? 'vulnerable' : 'none' %>">
+        <td><%= link_to row.project.name, settings_project_path(row.project) %></td>
+        <td class="count"><strong><%= row.pages > 0 ? link_to(row.pages, public_send(index_path, row.project)) : row.pages %></strong></td>
+        <td class="count"><%= row.attachments %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

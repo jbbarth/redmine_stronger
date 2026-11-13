@@ -1,0 +1,32 @@
+<div class="box" id="<%= anchor %>">
+  <h3><%= title %></h3>
+
+  <% if total == 0 %>
+    <p class="icon icon-ok"><%= sprite_icon('checked') %><%= l(:stronger_no_exposed_issues) %></p>
+  <% else %>
+    <p class="warning"><%= l(:stronger_exposed_issues_summary, total: total, open: open, closed: total - open) %></p>
+    <% unless top_projects.empty? %>
+      <h4><%= l(:stronger_top_exposed_projects) %></h4>
+      <table class="list stronger-table">
+        <thead>
+          <tr>
+            <th><%= l(:field_project) %></th>
+            <th class="count"><%= l(:label_open_issues_plural) %></th>
+            <th class="count"><%= l(:label_closed_issues_plural) %></th>
+            <th class="count"><%= l(:label_total) %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% top_projects.each do |row| %>
+            <tr class="stronger-row stronger-row-<%= status %>">
+              <td><%= link_to row.name, settings_project_path(row.identifier) %></td>
+              <td class="count"><%= row.open_count.to_i %></td>
+              <td class="count"><%= row.total_count.to_i - row.open_count.to_i %></td>
+              <td class="count"><strong><%= row.total_count.to_i %></strong></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
+  <% end %>
+</div>

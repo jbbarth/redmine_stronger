@@ -88,6 +88,16 @@ describe StrongerSecurityController do
         expect(assigns(:api_user_outcomes)[admin.id]).to eq(UserLoginSession::OUTCOME_DENIED)
       end
 
+      it "lists the API accounts with blocked attempts first" do
+        Token.create!(user: User.find(2), action: 'api', last_used_at: 1.hour.ago)
+        Token.create!(user: User.find(3), action: 'api', last_used_at: 3.days.ago)
+        UserLoginSession.create!(user: User.find(3), logged_in_at: 3.days.ago, auth_method: 'api_key',
+                                 outcome: UserLoginSession::OUTCOME_BLOCKED)
+
+        get :index
+        expect(assigns(:api_users).map(&:user_id).first(2)).to eq [3, 2]
+      end
+
       context "rendering the page" do
         render_views
 
@@ -153,7 +163,7 @@ describe StrongerSecurityController do
         StrongerDependencyReport.record!(payload)
         get :dependencies
         expect(response).to be_successful
-        expect(response.body).to include("CVE-2026-0001", "HTTP 503", "rack", "3.2.7")
+        expect(response.body).to include("CVE-2026-0001", "HTTP 503", "rack", "3.2.7", "/issues/new?issue")
       end
 
       it "does not present an incomplete audit as free of vulnerabilities" do

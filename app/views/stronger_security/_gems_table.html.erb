@@ -1,4 +1,4 @@
-<table class="list stronger-dependencies">
+<table class="list stronger-table">
   <thead>
     <tr>
       <th><%= l(:stronger_column_gem) %></th>
@@ -6,6 +6,7 @@
       <th><%= l(:stronger_column_branch_latest) %></th>
       <th><%= l(:stronger_column_latest) %></th>
       <th><%= l(:stronger_column_advisories) %></th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -19,6 +20,7 @@
         <td><%= stronger_newer_version(item, 'branch_latest') %></td>
         <td><%= stronger_newer_version(item, 'latest') %></td>
         <td><%= render 'stronger_security/advisories', advisories: item['advisories'] %></td>
+        <td class="buttons"><%= stronger_new_issue_link(item, @report) %></td>
       </tr>
     <% end %>
   </tbody>

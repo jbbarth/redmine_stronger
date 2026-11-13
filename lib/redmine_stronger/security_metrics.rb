@@ -6,6 +6,7 @@ module RedmineStronger
     TOP_PROJECTS_LIMIT   = 10
     INACTIVE_USERS_LIMIT = 15
     API_USERS_PER_PAGE   = 25
+    API_RECENT_DAYS      = 30
 
     WIKI_PERMISSION          = :view_wiki_pages
     DOCUMENTATION_PERMISSION = :view_documentation_pages
@@ -73,12 +74,23 @@ module RedmineStronger
       end
     end
 
-    # API tokens that have been used to authenticate, most recently used first.
+    # API tokens used to authenticate in the last API_RECENT_DAYS days,
+    # most recently used first. Blocked attempts count as a use.
     def self.api_users_scope
       Token.where(action: 'api')
-           .where.not(last_used_at: nil)
+           .where(last_used_at: API_RECENT_DAYS.days.ago..)
            .includes(:user)
            .order(last_used_at: :desc)
+    end
+
+    # Maps user_id => number of API key attempts blocked by the intranet-only
+    # restriction in the last API_RECENT_DAYS days. Attempts are recorded at
+    # most once a day per address, so this counts days and addresses.
+    def self.api_blocked_attempts
+      UserLoginSession.where(auth_method: 'api_key', outcome: UserLoginSession::OUTCOME_BLOCKED)
+                      .where(logged_in_at: API_RECENT_DAYS.days.ago..)
+                      .group(:user_id)
+                      .count
     end
 
     # Maps user_id => most recent provenance recorded on an API key session.

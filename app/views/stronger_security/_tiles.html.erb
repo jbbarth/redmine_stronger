@@ -1,0 +1,9 @@
+<div class="stronger-tiles">
+  <% tiles.each do |tile| %>
+    <a class="stronger-tile stronger-tile-<%= tile[:status] %>" href="#<%= tile[:anchor] %>">
+      <span class="stronger-tile-title"><%= tile[:title] %></span>
+      <span class="stronger-tile-count"><%= tile[:count] %></span>
+      <span class="stronger-tile-detail"><%= safe_join(tile[:details], tag.br) %></span>
+    </a>
+  <% end %>
+</div>

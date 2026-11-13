@@ -33,20 +33,23 @@ class StrongerSecurityController < ApplicationController
     threshold = metrics::LARGE_COUNT_THRESHOLD
 
     @inactive_users_count = metrics.inactive_users_count
-    if @inactive_users_count <= threshold
-      @inactive_users  = metrics.inactive_users
-      @inactive_admins = []
-    else
-      # Too many to list individually: surface at least the inactive admins.
-      @inactive_users  = []
-      @inactive_admins = metrics.inactive_admins
-    end
+    # Too many to list individually: only the inactive admins are listed.
+    @inactive_users  = @inactive_users_count <= threshold ? metrics.inactive_users : []
+    @inactive_admins = metrics.inactive_admins.to_a
 
     @locked_users         = User.where(status: Principal::STATUS_LOCKED)
                                 .where.not(lock_comment: nil)
                                 .order(updated_on: :desc)
 
+    @api_blocked_attempts = metrics.api_blocked_attempts
     api_users_scope       = metrics.api_users_scope
+    if @api_blocked_attempts.any?
+      # Accounts with blocked attempts first, so that they never hide on a later page.
+      blocked_ids = @api_blocked_attempts.keys.map(&:to_i).join(',')
+      api_users_scope = api_users_scope.reorder(
+        Arel.sql("CASE WHEN #{Token.table_name}.user_id IN (#{blocked_ids}) THEN 0 ELSE 1 END"), last_used_at: :desc
+      )
+    end
     @api_users_count      = api_users_scope.count
     @api_users_pages      = Redmine::Pagination::Paginator.new(
       @api_users_count, metrics::API_USERS_PER_PAGE, params[:page]

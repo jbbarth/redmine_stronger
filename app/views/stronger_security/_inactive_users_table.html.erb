@@ -1,0 +1,20 @@
+<table class="list stronger-table">
+  <thead>
+    <tr>
+      <th><%= l(:field_login) %></th>
+      <th><%= l(:field_user) %></th>
+      <th><%= l(:field_last_login_on) %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% users.each_with_index.sort_by { |user, i| [stronger_user_row_status(user) == 'alert' ? 0 : 1, i] }.each do |user, _| %>
+      <tr class="stronger-row stronger-row-<%= stronger_user_row_status(user) || 'none' %>">
+        <td><%= link_to user.login, edit_user_path(user) %><%= stronger_admin_badge(user) %></td>
+        <td><%= user.name %></td>
+        <td class="<%= user.last_login_on ? '' : 'stronger-never-logged' %>">
+          <%= user.last_login_on ? format_date(user.last_login_on) : l(:stronger_never_logged_in) %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
