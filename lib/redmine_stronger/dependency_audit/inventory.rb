@@ -303,6 +303,17 @@ module RedmineStronger
         end
       end
 
+      # Number of local commits on top of an upstream commit, or nil when that
+      # commit is unknown locally or not an ancestor of HEAD (behind or diverged).
+      def commits_ahead(path, commit)
+        dir = @root.join(path).to_s
+        _, ancestor = capture('git', '-C', dir, 'merge-base', '--is-ancestor', commit, 'HEAD')
+        return unless ancestor
+
+        count, = capture('git', '-C', dir, 'rev-list', '--count', "#{commit}..HEAD")
+        count.to_s.strip.presence&.to_i
+      end
+
       # git@github.com:owner/repo.git => https://github.com/owner/repo.git
       # Credentials are dropped. Non-https remotes are not queried.
       def public_remote(url)

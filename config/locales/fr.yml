@@ -137,6 +137,9 @@ fr:
   stronger_no_fix_available: "pas de correctif disponible"
   stronger_plugin_up_to_date: "À jour"
   stronger_plugin_differs: "Différent"
+  stronger_plugin_local_commits:
+    one: "+ 1 commit local sur"
+    other: "+ %{count} commits locaux sur"
   stronger_plugin_remote_error: "Dépôt injoignable"
   stronger_plugin_no_public_remote: "Pas de dépôt https"
   stronger_plugin_not_git: "Pas un dépôt git"

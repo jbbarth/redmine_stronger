@@ -165,7 +165,9 @@ module RedmineStronger
 
             if result['remote_commit']
               plugin['remote_commit'] = result['remote_commit']
-              plugin['up_to_date'] = result['remote_commit'] == plugin['commit']
+              ahead = @inventory.commits_ahead(plugin['path'], result['remote_commit']) if result['remote_commit'] != plugin['commit']
+              plugin['local_commits'] = ahead if ahead
+              plugin['up_to_date'] = result['remote_commit'] == plugin['commit'] || ahead.present?
             else
               plugin['remote_error'] = result['error']
             end

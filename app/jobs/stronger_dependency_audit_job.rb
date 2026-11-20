@@ -17,10 +17,20 @@ class StrongerDependencyAuditJob < ApplicationJob
     return if report.done?
 
     Rails.logger.error "[redmine_stronger] dependency audit failed: #{output}"
-    report.fail!(output.lines.last(5).join.strip.presence || "exit status #{status&.exitstatus}")
+    report.fail!(failure_summary(output).presence || "exit status #{status&.exitstatus}")
   rescue => e
     report&.fail!(e.message)
     raise
+  end
+
+  BACKTRACE_LINE = /\A\s*\S+:\d+:in /
+
+  # The end of a rake failure is its backtrace: keep the message lines.
+  def failure_summary(output)
+    lines = output.to_s.lines.map(&:rstrip).reject do |line|
+      line.blank? || line.match?(BACKTRACE_LINE) || line.start_with?('(See full trace')
+    end
+    lines.last(5).join("\n")
   end
 
   def run_task(report)

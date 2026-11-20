@@ -62,6 +62,22 @@ describe RedmineStronger::DependencyAudit::Collector do
     expect(advisories).to eq("libxml2" => ["CVE-1"], "libfoo" => ["CVE-4"])
   end
 
+  it "treats a checkout with local commits on top of its upstream head as up to date" do
+    plugins = [{ "name" => "patched", "path" => "plugins/patched", "commit" => "a" * 40, "remote" => "https://example.org/patched.git" },
+               { "name" => "behind", "path" => "plugins/behind", "commit" => "c" * 40, "remote" => "https://example.org/behind.git" }]
+    allow(inventory).to receive(:plugins).and_return(plugins)
+    allow(inventory).to receive(:commits_ahead).with("plugins/patched", "b" * 40).and_return(1)
+    allow(inventory).to receive(:commits_ahead).with("plugins/behind", "d" * 40).and_return(nil)
+    allow_any_instance_of(RedmineStronger::DependencyAudit::Sources::GitRemote).to receive(:heads)
+      .and_return("patched" => { "remote_commit" => "b" * 40 }, "behind" => { "remote_commit" => "d" * 40 })
+
+    patched, behind = described_class.new(http: failing_http, inventory: inventory, sources: %w(git)).run["plugins"]
+
+    expect(patched).to include("up_to_date" => true, "local_commits" => 1, "remote_commit" => "b" * 40)
+    expect(behind).to include("up_to_date" => false)
+    expect(behind).not_to have_key("local_commits")
+  end
+
   it "only reads the local inventory when offline" do
     payload = described_class.new(http: failing_http, inventory: inventory, offline: true).run
 

@@ -132,6 +132,24 @@ describe RedmineStronger::DependencyAudit::Inventory do
     expect(inventory.public_remote("https://user:secret@example.org/plugin.git")).to eq "https://example.org/plugin.git"
     expect(inventory.public_remote("/srv/git/plugin.git")).to be_nil
   end
+
+  it "counts local commits on top of an upstream commit, only when the checkout contains it" do
+    Dir.mktmpdir do |dir|
+      git = ->(*args) { system("git", "-C", dir, "-c", "user.name=t", "-c", "user.email=t@example.org", *args, exception: true, out: File::NULL, err: File::NULL) }
+      git.call("init", "-q")
+      git.call("commit", "-q", "--allow-empty", "-m", "upstream")
+      upstream = `git -C #{dir} rev-parse HEAD`.strip
+      git.call("commit", "-q", "--allow-empty", "-m", "local patch")
+      git.call("checkout", "-q", "-b", "other", upstream)
+      git.call("commit", "-q", "--allow-empty", "-m", "newer upstream")
+      newer = `git -C #{dir} rev-parse HEAD`.strip
+      git.call("checkout", "-q", "-")
+
+      expect(inventory.commits_ahead(dir, upstream)).to eq 1
+      expect(inventory.commits_ahead(dir, newer)).to be_nil
+      expect(inventory.commits_ahead(dir, "f" * 40)).to be_nil
+    end
+  end
 end
 
 describe RedmineStronger::DependencyAudit::Http do

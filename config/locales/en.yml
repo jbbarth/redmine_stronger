@@ -137,6 +137,9 @@ en:
   stronger_no_fix_available: "no fix available"
   stronger_plugin_up_to_date: "Up to date"
   stronger_plugin_differs: "Different"
+  stronger_plugin_local_commits:
+    one: "+ 1 local commit on"
+    other: "+ %{count} local commits on"
   stronger_plugin_remote_error: "Repository unreachable"
   stronger_plugin_no_public_remote: "No https repository"
   stronger_plugin_not_git: "Not a git repository"

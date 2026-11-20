@@ -187,6 +187,10 @@
             <td>
               <% if item['up_to_date'] %>
                 <span class="stronger-support stronger-support-supported"><%= l(:stronger_plugin_up_to_date) %></span>
+                <% if item['local_commits'] %>
+                  <span class="stronger-muted"><%= l(:stronger_plugin_local_commits, count: item['local_commits']) %></span>
+                  <code><%= stronger_short_commit(item['remote_commit']) %></code>
+                <% end %>
               <% elsif item['up_to_date'] == false %>
                 <span class="stronger-support stronger-support-security_only"><%= l(:stronger_plugin_differs) %></span>
                 <code><%= stronger_short_commit(item['remote_commit']) %></code>
