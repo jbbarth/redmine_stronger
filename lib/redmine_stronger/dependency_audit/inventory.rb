@@ -290,7 +290,8 @@ module RedmineStronger
         Redmine::Plugin.all.map do |plugin|
           dir = plugin.directory.to_s
           item = { 'kind' => 'plugin', 'name' => plugin.id.to_s, 'label' => plugin.name.to_s,
-                   'version' => plugin.version.to_s, 'path' => relative(dir) }
+                   'version' => plugin.version.to_s, 'path' => relative(dir),
+                   'url' => public_remote(plugin.url.to_s) }
           head, = capture('git', '-C', dir, 'rev-parse', 'HEAD')
           if head.present?
             date, = capture('git', '-C', dir, 'log', '-1', '--format=%cI')

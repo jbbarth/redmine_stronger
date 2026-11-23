@@ -347,4 +347,12 @@ module StrongerSecurityHelper
   def stronger_short_commit(sha)
     sha.to_s[0, 8]
   end
+
+  # Plugin name linked to its repository: the git remote, else the URL declared in init.rb.
+  def stronger_plugin_name(item)
+    url = (item['remote'].presence || item['url'].presence)&.delete_suffix('.git')
+    return item['name'] unless url
+
+    link_to item['name'], url, class: 'external', target: '_blank', rel: 'noopener'
+  end
 end

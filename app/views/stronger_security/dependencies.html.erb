@@ -174,7 +174,7 @@
       <tbody>
         <% plugins.sort_by { |p| [p['up_to_date'] == false ? 0 : 1, p['name']] }.each do |item| %>
           <tr class="stronger-row stronger-row-<%= stronger_item_status(item) %>">
-            <td><strong><%= item['name'] %></strong><div class="stronger-muted"><%= item['label'] %></div></td>
+            <td><strong><%= stronger_plugin_name(item) %></strong><div class="stronger-muted"><%= item['label'] %></div></td>
             <td><%= stronger_version_tag(item) %></td>
             <td>
               <% if item['commit'] %>
