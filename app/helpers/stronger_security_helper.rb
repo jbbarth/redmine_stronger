@@ -61,9 +61,18 @@ module StrongerSecurityHelper
   # A newer version, shown only when it differs from the installed one.
   def stronger_newer_version(item, key)
     newer = item[key]
-    return if newer.blank? || newer == item['version']
+    return unless stronger_version_newer?(newer, item['version'])
 
     content_tag(:span, newer, class: 'stronger-newer')
+  end
+
+  # The installed version can be ahead of the last known release (a point
+  # release not yet listed upstream): only a strictly greater one counts.
+  def stronger_version_newer?(candidate, installed)
+    return false if candidate.blank? || candidate == installed
+    return candidate != installed unless Gem::Version.correct?(candidate) && Gem::Version.correct?(installed)
+
+    Gem::Version.new(candidate) > Gem::Version.new(installed)
   end
 
   # Colour status of an audited item, most severe first:
@@ -90,7 +99,7 @@ module StrongerSecurityHelper
   # (security only) is shown by the support badge, not here.
   def stronger_outdated?(item)
     newer = item['branch_latest'] || (item['kind'] == 'javascript' && item['latest'])
-    (newer.present? && newer != item['version']) || item['candidate'].present? || item['up_to_date'] == false
+    stronger_version_newer?(newer, item['version']) || item['candidate'].present? || item['up_to_date'] == false
   end
 
   def stronger_version_tag(item)
@@ -203,7 +212,7 @@ module StrongerSecurityHelper
   def stronger_target_version(item)
     candidates = [item['candidate']]
     candidates += item['eol'] ? [item['latest']] : [item['branch_latest'], item['latest']]
-    candidates.find { |version| version.present? && version != item['version'] }
+    candidates.find { |version| stronger_version_newer?(version, item['version']) }
   end
 
   def stronger_issue_component(item)

@@ -39,6 +39,12 @@ describe StrongerSecurityHelper, type: :helper do
       expect(helper.stronger_item_status("version" => "17.11", "branch_latest" => "17.12")).to eq "outdated"
     end
 
+    it "does not flag a version ahead of the last known release" do
+      debian = { "kind" => "os", "version" => "13.8", "branch_latest" => "13.7", "latest" => "13.7" }
+      expect(helper.stronger_item_status(debian)).to eq "ok"
+      expect(helper.stronger_newer_version(debian, "branch_latest")).to be_nil
+    end
+
     it "flags a high vulnerability before anything else" do
       item = { "version" => "3.2.6", "branch_latest" => "3.2.8", "advisories" => [{ "severity" => "high" }] }
       expect(helper.stronger_item_status(item)).to eq "alert"
